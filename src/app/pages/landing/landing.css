@@ -1,0 +1,22 @@
+.landing {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.landing-card {
+  width: min(100%, 560px);
+  text-align: center;
+}
+
+.landing-card h1 {
+  margin-bottom: 0.5rem;
+}
+
+.actions {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
