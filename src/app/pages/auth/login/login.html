@@ -1,14 +1,27 @@
 <div class="card">
   <h2>Login</h2>
 
-  <form (ngSubmit)="onSubmit()">
+  @if (feedback(); as status) {
+    <p-message [severity]="status.severity" [text]="status.text"></p-message>
+  }
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
     <label>Email</label>
-    <input pInputText type="email" [(ngModel)]="email" name="email" required />
+    <input pInputText type="email" formControlName="email" />
+    @if (loginForm.controls.email.touched && loginForm.controls.email.hasError('required')) {
+      <p-message severity="error" text="El email es obligatorio"></p-message>
+    }
+    @if (loginForm.controls.email.touched && loginForm.controls.email.hasError('email')) {
+      <p-message severity="error" text="Ingresa un email válido"></p-message>
+    }
 
     <label>Password</label>
-    <input pInputText type="password" [(ngModel)]="password" name="password" required />
+    <input pInputText type="password" formControlName="password" />
+    @if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) {
+      <p-message severity="error" text="La contraseña es obligatoria"></p-message>
+    }
 
-    <p-button type="submit" label="Entrar"></p-button>
+    <p-button type="submit" label="Entrar" [disabled]="loginForm.invalid"></p-button>
   </form>
 
   <p>

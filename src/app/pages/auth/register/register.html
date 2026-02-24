@@ -1,17 +1,92 @@
 <div class="card">
   <h2>Register</h2>
 
-  <form (ngSubmit)="onSubmit()">
-    <label>Nombre</label>
-    <input pInputText type="text" [(ngModel)]="name" name="name" required />
+  @if (feedback(); as status) {
+    <p-message [severity]="status.severity" [text]="status.text"></p-message>
+  }
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+    <label>Usuario</label>
+    <input pInputText type="text" formControlName="username" />
+    @if (registerForm.controls.username.touched && registerForm.controls.username.hasError('required')) {
+      <p-message severity="error" text="El usuario es obligatorio"></p-message>
+    }
 
     <label>Email</label>
-    <input pInputText type="email" [(ngModel)]="email" name="email" required />
+    <input pInputText type="email" formControlName="email" />
+    @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('required')) {
+      <p-message severity="error" text="El email es obligatorio"></p-message>
+    }
+    @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('email')) {
+      <p-message severity="error" text="Ingresa un email válido"></p-message>
+    }
 
-    <label>Password</label>
-    <input pInputText type="password" [(ngModel)]="password" name="password" required />
+    <label>Nombre completo</label>
+    <input pInputText type="text" formControlName="fullName" />
+    @if (registerForm.controls.fullName.touched && registerForm.controls.fullName.hasError('required')) {
+      <p-message severity="error" text="El nombre completo es obligatorio"></p-message>
+    }
 
-    <p-button type="submit" label="Crear cuenta"></p-button>
+    <label>Dirección</label>
+    <input pInputText type="text" formControlName="address" />
+    @if (registerForm.controls.address.touched && registerForm.controls.address.hasError('required')) {
+      <p-message severity="error" text="La dirección es obligatoria"></p-message>
+    }
+
+    <label>Teléfono</label>
+    <input
+      pInputText
+      type="tel"
+      formControlName="phone"
+      maxlength="10"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      (input)="onPhoneInput($event)"
+    />
+    @if (registerForm.controls.phone.touched && registerForm.controls.phone.hasError('required')) {
+      <p-message severity="error" text="El teléfono es obligatorio"></p-message>
+    }
+    @if (registerForm.controls.phone.touched && registerForm.controls.phone.hasError('pattern')) {
+      <p-message severity="error" text="El teléfono debe contener solo 10 números"></p-message>
+    }
+
+    <label>Fecha de nacimiento</label>
+    <input pInputText type="date" formControlName="birthDate" />
+    @if (registerForm.controls.birthDate.touched && registerForm.controls.birthDate.hasError('required')) {
+      <p-message severity="error" text="La fecha de nacimiento es obligatoria"></p-message>
+    }
+    @if (registerForm.controls.birthDate.touched && registerForm.controls.birthDate.hasError('underAge')) {
+      <p-message severity="error" text="Solo se permite registro a mayores de edad (18+)"></p-message>
+    }
+
+    <label>Contraseña</label>
+    <input pInputText type="password" formControlName="password" />
+    <p-message severity="info" text="Requisitos de contraseña"></p-message>
+    <ul class="password-requirements">
+      <li>Mínimo 10 caracteres.</li>
+      <li>Debe incluir al menos 1 símbolo especial.</li>
+      <li>Símbolos válidos: ! @ # $ % ^ &amp; * ( ) _ - + = [ ] ; : ' &quot; \ | , . &lt; &gt; / ?</li>
+    </ul>
+    @if (registerForm.controls.password.touched && registerForm.controls.password.hasError('required')) {
+      <p-message severity="error" text="La contraseña es obligatoria"></p-message>
+    }
+    @if (registerForm.controls.password.touched && registerForm.controls.password.hasError('minLengthPassword')) {
+      <p-message severity="error" text="La contraseña debe tener al menos 10 caracteres"></p-message>
+    }
+    @if (registerForm.controls.password.touched && registerForm.controls.password.hasError('missingSpecialCharacter')) {
+      <p-message severity="error" text="Debe incluir un símbolo especial: ! @ # $ % ^ & * ( ) _ - + = [ ] { } ; : ' &quot; \ | , . &lt; &gt; / ?"></p-message>
+    }
+
+    <label>Confirmar contraseña</label>
+    <input pInputText type="password" formControlName="confirmPassword" />
+    @if (registerForm.controls.confirmPassword.touched && registerForm.controls.confirmPassword.hasError('required')) {
+      <p-message severity="error" text="Confirma tu contraseña"></p-message>
+    }
+    @if (registerForm.touched && registerForm.hasError('passwordMismatch')) {
+      <p-message severity="error" text="Las contraseñas no coinciden"></p-message>
+    }
+
+    <p-button type="submit" label="Crear cuenta" [disabled]="registerForm.invalid"></p-button>
   </form>
 
   <p>
