@@ -1,0 +1,29 @@
+.sidebar {
+  height: 100%;
+  padding: 1rem;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  border-right: 1px solid var(--p-content-border-color);
+  background: var(--p-surface-0);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.sidebar-footer {
+  padding-top: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--p-content-border-color);
+  }
+}

@@ -10,6 +10,18 @@ export const routes: Routes = [
   },
 
   {
+    path: 'home',
+    loadComponent: () =>
+      import('./layout/main-layout/main-layout').then((m) => m.MainLayoutComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/home/home').then((m) => m.HomeComponent)
+      }
+    ]
+  },
+
+  {
     path: 'auth',
     loadComponent: () =>
       import('./pages/auth/layout/auth-layout').then((m) => m.AuthLayoutComponent),

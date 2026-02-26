@@ -1,0 +1,16 @@
+.main-layout {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  background: var(--p-surface-50);
+}
+
+.main-content {
+  padding: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+}

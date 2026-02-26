@@ -1,0 +1,19 @@
+<aside class="sidebar" aria-label="Menú principal">
+  <header class="sidebar-header">
+    <i class="pi pi-briefcase" aria-hidden="true"></i>
+    <span>ERP</span>
+  </header>
+
+  <p-panelmenu [model]="menuItems"></p-panelmenu>
+
+  <footer class="sidebar-footer">
+    <p-button
+      label="Cerrar sesión"
+      icon="pi pi-sign-out"
+      severity="secondary"
+      variant="outlined"
+      routerLink="/landing"
+      styleClass="w-full"
+    ></p-button>
+  </footer>
+</aside>

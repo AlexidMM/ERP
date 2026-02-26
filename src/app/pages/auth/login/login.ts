@@ -1,18 +1,21 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { PasswordModule } from 'primeng/password';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, MessageModule],
+  imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, MessageModule, PasswordModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
+  private readonly router = inject(Router);
+
   private readonly hardcodedCredentials = {
     email: 'admin@erp.com',
     password: 'Admin@12345'
@@ -59,6 +62,6 @@ export class LoginComponent {
       text: 'Inicio de sesión correcto.'
     });
 
-    console.log('LOGIN SUCCESS:', { email });
+    void this.router.navigateByUrl('/home');
   }
 }

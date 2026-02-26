@@ -16,7 +16,14 @@
     }
 
     <label>Password</label>
-    <input pInputText type="password" formControlName="password" />
+    <p-password
+      formControlName="password"
+      [toggleMask]="true"
+      [fluid]="true"
+      [feedback]="false"
+      [style]="{ width: '100%' }"
+      [inputStyle]="{ width: '100%' }"
+    ></p-password>
     @if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) {
       <p-message severity="error" text="La contraseña es obligatoria"></p-message>
     }

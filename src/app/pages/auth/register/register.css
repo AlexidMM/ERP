@@ -18,6 +18,10 @@ input, button {
   padding: 8px;
 }
 
+p-password {
+  width: 100%;
+}
+
 .password-requirements {
   margin: 0;
   padding-left: 20px;

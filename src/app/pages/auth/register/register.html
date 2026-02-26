@@ -60,7 +60,14 @@
     }
 
     <label>Contraseña</label>
-    <input pInputText type="password" formControlName="password" />
+    <p-password
+      formControlName="password"
+      [toggleMask]="true"
+      [fluid]="true"
+      [feedback]="false"
+      [style]="{ width: '100%' }"
+      [inputStyle]="{ width: '100%' }"
+    ></p-password>
     <p-message severity="info" text="Requisitos de contraseña"></p-message>
     <ul class="password-requirements">
       <li>Mínimo 10 caracteres.</li>
@@ -78,7 +85,14 @@
     }
 
     <label>Confirmar contraseña</label>
-    <input pInputText type="password" formControlName="confirmPassword" />
+    <p-password
+      formControlName="confirmPassword"
+      [toggleMask]="true"
+      [fluid]="true"
+      [feedback]="false"
+      [style]="{ width: '100%' }"
+      [inputStyle]="{ width: '100%' }"
+    ></p-password>
     @if (registerForm.controls.confirmPassword.touched && registerForm.controls.confirmPassword.hasError('required')) {
       <p-message severity="error" text="Confirma tu contraseña"></p-message>
     }
