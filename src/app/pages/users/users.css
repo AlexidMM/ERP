@@ -1,0 +1,59 @@
+.users {
+  max-width: 980px;
+  margin: 0 auto;
+  color: #111827;
+}
+
+:host ::ng-deep .p-card,
+:host ::ng-deep .p-card .p-card-title,
+:host ::ng-deep .p-card .p-card-content {
+  color: #111827 !important;
+}
+
+.users-title {
+  margin: 0 0 1.25rem;
+  text-align: center;
+  letter-spacing: 0.08em;
+  font-size: 1.15rem;
+  color: #000000 !important;
+  background: #1f2937;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.65rem;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.95rem;
+}
+
+.field-item {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.75rem;
+  background: var(--p-surface-100);
+}
+
+.field-item label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.field-item input {
+  color: #111827;
+  background: #ffffff;
+}
+
+.field-item input::placeholder {
+  color: #374151;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+}

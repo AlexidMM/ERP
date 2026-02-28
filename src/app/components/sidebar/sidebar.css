@@ -1,29 +1,96 @@
 .sidebar {
-  height: 100%;
+  height: calc(100dvh - 1.5rem);
+  margin: 0.75rem;
   padding: 1rem;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 1rem;
-  border-right: 1px solid var(--p-content-border-color);
-  background: var(--p-surface-0);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 1rem;
+  background: #ffffff;
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
+  color: #111827;
+}
+
+:host ::ng-deep .p-panelmenu {
+  border: 0;
+  background: transparent;
+}
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-panel {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-content,
+:host ::ng-deep .p-panelmenu .p-panelmenu-content {
+  border: 0;
+  background: transparent;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-link {
+  border-radius: 0.6rem;
+  color: #111827 !important;
+  transition: background-color 160ms ease;
+  gap: 0.5rem;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-link:hover {
+  background: #e0f2fe;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-icon,
+:host ::ng-deep .p-panelmenu .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-label,
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-action {
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-label {
+  display: inline !important;
+  visibility: visible !important;
+}
+
+:host ::ng-deep .p-panelmenu,
+:host ::ng-deep .p-panelmenu * {
+  color: #000000 !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-link.p-focus {
+  background: #dbeafe;
 }
 
 .sidebar-footer {
   padding-top: 0.5rem;
 }
 
+.sidebar-version {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.75rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #0f172a;
+  background: #eef2ff;
+}
+
 @media (max-width: 900px) {
   .sidebar {
     height: auto;
-    border-right: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
     border-bottom: 1px solid var(--p-content-border-color);
   }
 }

@@ -7,13 +7,25 @@
 
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
     <label>Usuario</label>
-    <input pInputText type="text" formControlName="username" />
+    <input
+      pInputText
+      type="text"
+      formControlName="username"
+      (keydown)="onPreventSpace($event)"
+      (input)="onTextInputWithoutSpaces('username', $event)"
+    />
     @if (registerForm.controls.username.touched && registerForm.controls.username.hasError('required')) {
       <p-message severity="error" text="El usuario es obligatorio"></p-message>
     }
 
     <label>Email</label>
-    <input pInputText type="email" formControlName="email" />
+    <input
+      pInputText
+      type="email"
+      formControlName="email"
+      (keydown)="onPreventSpace($event)"
+      (input)="onTextInputWithoutSpaces('email', $event)"
+    />
     @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('required')) {
       <p-message severity="error" text="El email es obligatorio"></p-message>
     }
@@ -22,13 +34,25 @@
     }
 
     <label>Nombre completo</label>
-    <input pInputText type="text" formControlName="fullName" />
+    <input
+      pInputText
+      type="text"
+      formControlName="fullName"
+      (keydown)="onPreventSpace($event)"
+      (input)="onTextInputWithoutSpaces('fullName', $event)"
+    />
     @if (registerForm.controls.fullName.touched && registerForm.controls.fullName.hasError('required')) {
       <p-message severity="error" text="El nombre completo es obligatorio"></p-message>
     }
 
     <label>Dirección</label>
-    <input pInputText type="text" formControlName="address" />
+    <input
+      pInputText
+      type="text"
+      formControlName="address"
+      (keydown)="onPreventSpace($event)"
+      (input)="onTextInputWithoutSpaces('address', $event)"
+    />
     @if (registerForm.controls.address.touched && registerForm.controls.address.hasError('required')) {
       <p-message severity="error" text="La dirección es obligatoria"></p-message>
     }

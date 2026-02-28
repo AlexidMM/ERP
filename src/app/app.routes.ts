@@ -17,6 +17,14 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () => import('./pages/home/home').then((m) => m.HomeComponent)
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./pages/users/users').then((m) => m.UsersComponent)
+      },
+      {
+        path: 'groups',
+        loadComponent: () => import('./pages/groups/groups').then((m) => m.GroupsComponent)
       }
     ]
   },

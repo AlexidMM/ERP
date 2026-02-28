@@ -14,9 +14,19 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 
+type RegisterTextField = 'username' | 'email' | 'fullName' | 'address';
+
 function hasSpecialCharacter(value: string): boolean {
   const specialCharacterRegex = /[!@#$%^&*()_\-+=\[\]{};:'"\\|,.<>/?]/;
   return specialCharacterRegex.test(value);
+}
+
+function requiredNoWhitespaceValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = String(control.value ?? '');
+
+    return value.trim().length > 0 ? null : { required: true };
+  };
 }
 
 function passwordStrengthValidator(): ValidatorFn {
@@ -90,19 +100,19 @@ export class RegisterComponent {
     {
       username: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required]
+        validators: [Validators.required, requiredNoWhitespaceValidator()]
       }),
       email: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.email]
+        validators: [Validators.required, requiredNoWhitespaceValidator(), Validators.email]
       }),
       fullName: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required]
+        validators: [Validators.required, requiredNoWhitespaceValidator()]
       }),
       address: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required]
+        validators: [Validators.required, requiredNoWhitespaceValidator()]
       }),
       phone: new FormControl('', {
         nonNullable: true,
@@ -114,17 +124,34 @@ export class RegisterComponent {
       }),
       password: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, passwordStrengthValidator()]
+        validators: [Validators.required, requiredNoWhitespaceValidator(), passwordStrengthValidator()]
       }),
       confirmPassword: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required]
+        validators: [Validators.required, requiredNoWhitespaceValidator()]
       })
     },
     { validators: [matchingPasswordsValidator()] }
   );
 
   readonly feedback = signal<{ severity: 'success' | 'error'; text: string } | null>(null);
+
+  onPreventSpace(event: KeyboardEvent): void {
+    if (event.key === ' ') {
+      event.preventDefault();
+    }
+  }
+
+  onTextInputWithoutSpaces(field: RegisterTextField, event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const normalizedValue = inputElement.value.replace(/\s+/g, '');
+
+    if (inputElement.value !== normalizedValue) {
+      inputElement.value = normalizedValue;
+    }
+
+    this.registerForm.controls[field].setValue(normalizedValue, { emitEvent: false });
+  }
 
   onPhoneInput(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
@@ -138,6 +165,7 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
+    this.normalizeTextFields();
     this.registerForm.markAllAsTouched();
 
     if (this.registerForm.invalid) {
@@ -155,5 +183,14 @@ export class RegisterComponent {
     });
 
     console.log('REGISTER SUCCESS:', registerData);
+  }
+
+  private normalizeTextFields(): void {
+    const fieldsToTrim = ['username', 'email', 'fullName', 'address', 'password', 'confirmPassword'] as const;
+
+    for (const field of fieldsToTrim) {
+      const control = this.registerForm.controls[field];
+      control.setValue(control.value.replace(/\s+/g, ''), { emitEvent: false });
+    }
   }
 }

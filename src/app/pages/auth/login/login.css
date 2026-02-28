@@ -1,23 +1,59 @@
+:host {
+  --p-text-color: var(--p-surface-950);
+  --p-text-muted-color: var(--p-surface-950);
+  color: var(--p-surface-950);
+}
+
 .card {
-  max-width: 320px;
-  margin: 40px auto;
-  padding: 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  max-width: 420px;
+  margin: 1rem auto;
+  padding: 1.25rem;
+  border: 1px solid var(--p-primary-color);
+  border-radius: 0.85rem;
+  background: var(--p-surface-100);
   display: grid;
-  gap: 10px;
+  gap: 0.7rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--p-surface-950);
 }
 
 form {
   display: grid;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
-input, button {
+label,
+p,
+a,
+h2 {
+  color: var(--p-surface-950);
+}
+
+input,
+button {
   width: 100%;
-  padding: 8px;
+}
+
+input {
+  background: var(--p-surface-0);
+  color: var(--p-surface-950);
 }
 
 p-password {
   width: 100%;
+}
+
+:host ::ng-deep .p-password-input {
+  background: var(--p-surface-0);
+  color: var(--p-surface-950);
+}
+
+:host ::ng-deep .p-message,
+:host ::ng-deep .p-message-text,
+:host ::ng-deep .p-message-summary,
+:host ::ng-deep .p-message-detail {
+  color: var(--p-surface-950);
 }

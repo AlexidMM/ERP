@@ -1,10 +1,13 @@
 <main class="auth-layout">
   <section class="auth-shell" aria-label="Autenticación">
-    <header class="auth-header">
+    <aside class="auth-aside" aria-label="Resumen del sistema">
       <h1>ERP</h1>
+      <p>Acceso al sistema con estilo base unificado para login y registro.</p>
       <a routerLink="/landing">Volver al inicio</a>
-    </header>
+    </aside>
 
-    <router-outlet></router-outlet>
+    <section class="auth-content" aria-label="Formulario de autenticación">
+      <router-outlet></router-outlet>
+    </section>
   </section>
 </main>

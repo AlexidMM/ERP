@@ -1,5 +1,6 @@
 <div class="card">
   <h2>Login</h2>
+  <p class="subtitle">Ingresa con tus credenciales para continuar.</p>
 
   @if (feedback(); as status) {
     <p-message [severity]="status.severity" [text]="status.text"></p-message>
@@ -28,7 +29,7 @@
       <p-message severity="error" text="La contraseña es obligatoria"></p-message>
     }
 
-    <p-button type="submit" label="Entrar" [disabled]="loginForm.invalid"></p-button>
+    <p-button type="submit" label="Entrar" [disabled]="loginForm.invalid" [fluid]="true"></p-button>
   </form>
 
   <p>

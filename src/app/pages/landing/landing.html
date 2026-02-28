@@ -1,11 +1,23 @@
 <main class="landing">
   <section class="landing-card" aria-label="Página principal">
-    <h1>ERP</h1>
-    <p>Bienvenido al sistema.</p>
+    <p-card>
+      <div class="landing-title">
+        <p-tag value="ERP UI" severity="contrast"></p-tag>
+        <h1>Bienvenido</h1>
+      </div>
 
-    <nav class="actions" aria-label="Accesos">
-      <p-button label="Iniciar sesión" routerLink="/auth/login"></p-button>
-      <p-button label="Crear cuenta" severity="secondary" routerLink="/auth/register"></p-button>
-    </nav>
+      <p class="landing-description">Panel base del proyecto con navegación y vistas de ejemplo.</p>
+
+      <nav class="actions" aria-label="Accesos">
+        <p-button label="Iniciar sesión" icon="pi pi-sign-in" routerLink="/auth/login"></p-button>
+        <p-button
+          label="Crear cuenta"
+          icon="pi pi-user-plus"
+          severity="secondary"
+          variant="outlined"
+          routerLink="/auth/register"
+        ></p-button>
+      </nav>
+    </p-card>
   </section>
 </main>

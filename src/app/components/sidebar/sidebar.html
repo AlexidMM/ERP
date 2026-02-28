@@ -7,13 +7,6 @@
   <p-panelmenu [model]="menuItems"></p-panelmenu>
 
   <footer class="sidebar-footer">
-    <p-button
-      label="Cerrar sesión"
-      icon="pi pi-sign-out"
-      severity="secondary"
-      variant="outlined"
-      routerLink="/landing"
-      styleClass="w-full"
-    ></p-button>
+    <p class="sidebar-version">{{ projectVersion }}</p>
   </footer>
 </aside>
