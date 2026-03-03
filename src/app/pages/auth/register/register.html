@@ -38,8 +38,6 @@
       pInputText
       type="text"
       formControlName="fullName"
-      (keydown)="onPreventSpace($event)"
-      (input)="onTextInputWithoutSpaces('fullName', $event)"
     />
     @if (registerForm.controls.fullName.touched && registerForm.controls.fullName.hasError('required')) {
       <p-message severity="error" text="El nombre completo es obligatorio"></p-message>
@@ -50,8 +48,6 @@
       pInputText
       type="text"
       formControlName="address"
-      (keydown)="onPreventSpace($event)"
-      (input)="onTextInputWithoutSpaces('address', $event)"
     />
     @if (registerForm.controls.address.touched && registerForm.controls.address.hasError('required')) {
       <p-message severity="error" text="La dirección es obligatoria"></p-message>

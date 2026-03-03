@@ -1,13 +1,6 @@
 .users {
   max-width: 980px;
   margin: 0 auto;
-  color: #111827;
-}
-
-:host ::ng-deep .p-card,
-:host ::ng-deep .p-card .p-card-title,
-:host ::ng-deep .p-card .p-card-content {
-  color: #111827 !important;
 }
 
 .users-title {
@@ -15,8 +8,8 @@
   text-align: center;
   letter-spacing: 0.08em;
   font-size: 1.15rem;
-  color: #000000 !important;
-  background: #1f2937;
+  color: var(--p-surface-950);
+  background: var(--p-surface-200);
   padding: 0.55rem 0.75rem;
   border-radius: 0.65rem;
 }
@@ -39,17 +32,19 @@
 .field-item label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--p-surface-900);
 }
 
 .field-item input {
-  color: #111827;
-  background: #ffffff;
+  color: var(--p-surface-900);
+  background: var(--p-surface-0);
 }
 
-.field-item input::placeholder {
-  color: #374151;
-  opacity: 1;
+.users-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 768px) {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -13,8 +13,9 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
+import { ErpStoreService } from '../../../shared/erp-store.service';
 
-type RegisterTextField = 'username' | 'email' | 'fullName' | 'address';
+type RegisterTextField = 'username' | 'email';
 
 function hasSpecialCharacter(value: string): boolean {
   const specialCharacterRegex = /[!@#$%^&*()_\-+=\[\]{};:'"\\|,.<>/?]/;
@@ -96,6 +97,8 @@ function matchingPasswordsValidator(): ValidatorFn {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent {
+  private readonly erpStore = inject(ErpStoreService);
+
   readonly registerForm = new FormGroup(
     {
       username: new FormControl('', {
@@ -177,20 +180,28 @@ export class RegisterComponent {
     }
 
     const { confirmPassword, ...registerData } = this.registerForm.getRawValue();
+    this.erpStore.saveProfile(registerData);
+
     this.feedback.set({
       severity: 'success',
-      text: 'Registro válido. (Solo validación web, sin backend).'
+      text: 'Registro guardado correctamente (solo almacenamiento local).'
     });
-
-    console.log('REGISTER SUCCESS:', registerData);
   }
 
   private normalizeTextFields(): void {
-    const fieldsToTrim = ['username', 'email', 'fullName', 'address', 'password', 'confirmPassword'] as const;
+    const fieldsWithoutSpaces = ['username', 'email', 'password', 'confirmPassword'] as const;
 
-    for (const field of fieldsToTrim) {
+    for (const field of fieldsWithoutSpaces) {
       const control = this.registerForm.controls[field];
       control.setValue(control.value.replace(/\s+/g, ''), { emitEvent: false });
     }
+
+    const fullNameControl = this.registerForm.controls.fullName;
+    fullNameControl.setValue(fullNameControl.value.replace(/\s+/g, ' ').trim(), {
+      emitEvent: false
+    });
+
+    const addressControl = this.registerForm.controls.address;
+    addressControl.setValue(addressControl.value.replace(/\s+/g, ' ').trim(), { emitEvent: false });
   }
 }
