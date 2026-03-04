@@ -7,7 +7,7 @@
   gap: 1rem;
   border: 1px solid var(--p-content-border-color);
   border-radius: 1rem;
-  background: #ffffff;
+  background: var(--p-surface-0);
 }
 
 .sidebar-header {
@@ -16,7 +16,7 @@
   gap: 0.5rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--p-text-color);
 }
 
 :host ::ng-deep .p-panelmenu {
@@ -33,22 +33,62 @@
 :host ::ng-deep .p-panelmenu .p-panelmenu-header-content,
 :host ::ng-deep .p-panelmenu .p-panelmenu-content {
   border: 0;
-  background: transparent;
+  background: transparent !important;
 }
 
 :host ::ng-deep .p-panelmenu .p-menuitem-link {
   border-radius: 0.6rem;
+  border: 1px solid transparent;
   color: #111827 !important;
-  transition: background-color 160ms ease;
+  background: transparent !important;
+  transition: border-color 160ms ease, color 160ms ease;
   gap: 0.5rem;
 }
 
-:host ::ng-deep .p-panelmenu .p-menuitem-link:hover {
-  background: #e0f2fe;
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link {
+  border-radius: 0.6rem;
+  border: 1px solid transparent;
+  color: #111827 !important;
+  background: transparent !important;
+  transition: border-color 160ms ease, color 160ms ease;
+  gap: 0.5rem;
+}
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-action {
+  border-radius: 0.6rem;
+  border: 1px solid transparent;
+  color: #111827 !important;
+  background: transparent !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-content,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-content,
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-content {
+  background: transparent !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-link:hover,
+:host ::ng-deep .p-panelmenu .p-menuitem-link.p-focus,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link:hover,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link:focus-visible {
+  border-color: var(--p-primary-color);
+  background: transparent !important;
+  color: #111827 !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-action:hover,
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-action:focus-visible {
+  border-color: var(--p-primary-color);
+  background: transparent !important;
+  color: #111827 !important;
 }
 
 :host ::ng-deep .p-panelmenu .p-menuitem-icon,
 :host ::ng-deep .p-panelmenu .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-menuitem-label,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-icon,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-label,
+:host ::ng-deep .p-panelmenu .p-panelmenu-header-icon,
 :host ::ng-deep .p-panelmenu .p-panelmenu-header-label,
 :host ::ng-deep .p-panelmenu .p-panelmenu-header-action {
   color: #111827 !important;
@@ -56,18 +96,40 @@
 }
 
 :host ::ng-deep .p-panelmenu .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-menuitem-label,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-label,
 :host ::ng-deep .p-panelmenu .p-panelmenu-header-label {
   display: inline !important;
   visibility: visible !important;
 }
 
-:host ::ng-deep .p-panelmenu,
-:host ::ng-deep .p-panelmenu * {
-  color: #000000 !important;
+:host ::ng-deep .p-panelmenu .p-menuitem-active > .p-menuitem-content > .p-menuitem-link,
+:host ::ng-deep .p-panelmenu .p-menuitem-link.router-link-active,
+:host ::ng-deep .p-panelmenu .p-menuitem-link[aria-current='page'],
+:host ::ng-deep .p-panelmenu .p-panelmenu-item.p-menuitem-active > .p-panelmenu-item-content > .p-panelmenu-item-link,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link.router-link-active,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link[aria-current='page'] {
+  border-color: var(--p-primary-color);
+  background: transparent !important;
+  color: #111827 !important;
 }
 
-:host ::ng-deep .p-panelmenu .p-menuitem-link.p-focus {
-  background: #dbeafe;
+:host ::ng-deep .p-panelmenu .p-menuitem-active > .p-menuitem-content > .p-menuitem-link .p-menuitem-icon,
+:host ::ng-deep .p-panelmenu .p-menuitem-active > .p-menuitem-content > .p-menuitem-link .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-menuitem-active > .p-menuitem-content > .p-menuitem-link .p-menuitem-label,
+:host ::ng-deep .p-panelmenu .p-menuitem-link.router-link-active .p-menuitem-icon,
+:host ::ng-deep .p-panelmenu .p-menuitem-link.router-link-active .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-menuitem-link.router-link-active .p-menuitem-label,
+:host ::ng-deep .p-panelmenu .p-menuitem-link[aria-current='page'] .p-menuitem-icon,
+:host ::ng-deep .p-panelmenu .p-menuitem-link[aria-current='page'] .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-menuitem-link[aria-current='page'] .p-menuitem-label,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item.p-menuitem-active > .p-panelmenu-item-content > .p-panelmenu-item-link .p-panelmenu-item-icon,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item.p-menuitem-active > .p-panelmenu-item-content > .p-panelmenu-item-link .p-panelmenu-item-label,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link.router-link-active .p-panelmenu-item-icon,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link.router-link-active .p-panelmenu-item-label,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link[aria-current='page'] .p-panelmenu-item-icon,
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link[aria-current='page'] .p-panelmenu-item-label {
+  color: #111827 !important;
 }
 
 .sidebar-footer {
@@ -81,8 +143,8 @@
   border-radius: 0.75rem;
   text-align: center;
   font-size: 0.9rem;
-  color: #0f172a;
-  background: #eef2ff;
+  color: var(--p-text-muted-color);
+  background: var(--p-surface-100);
 }
 
 @media (max-width: 900px) {

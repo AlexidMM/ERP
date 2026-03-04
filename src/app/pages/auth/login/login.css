@@ -1,7 +1,5 @@
 :host {
-  --p-text-color: var(--p-surface-950);
-  --p-text-muted-color: var(--p-surface-950);
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 .card {
@@ -17,7 +15,7 @@
 
 .subtitle {
   margin: 0;
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 form {
@@ -29,7 +27,7 @@ label,
 p,
 a,
 h2 {
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 input,
@@ -39,7 +37,7 @@ button {
 
 input {
   background: var(--p-surface-0);
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 p-password {
@@ -48,12 +46,5 @@ p-password {
 
 :host ::ng-deep .p-password-input {
   background: var(--p-surface-0);
-  color: var(--p-surface-950);
-}
-
-:host ::ng-deep .p-message,
-:host ::ng-deep .p-message-text,
-:host ::ng-deep .p-message-summary,
-:host ::ng-deep .p-message-detail {
-  color: var(--p-surface-950);
+  color: #111827;
 }

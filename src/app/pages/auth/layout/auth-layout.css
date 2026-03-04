@@ -28,12 +28,17 @@
 .auth-aside h1 {
   margin: 0;
   font-size: 1.7rem;
+  color: #111827;
 }
 
 .auth-aside p {
   margin: 0;
-  color: var(--p-text-muted-color);
+  color: #374151;
   line-height: 1.45;
+}
+
+.auth-aside a {
+  color: #111827;
 }
 
 .auth-content {

@@ -1,7 +1,5 @@
 :host {
-  --p-text-color: var(--p-surface-950);
-  --p-text-muted-color: var(--p-surface-950);
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 .card {
@@ -25,7 +23,7 @@ p,
 a,
 h2,
 li {
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 input,
@@ -35,7 +33,7 @@ button {
 
 input {
   background: var(--p-surface-0);
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 p-password {
@@ -44,23 +42,16 @@ p-password {
 
 :host ::ng-deep .p-password-input {
   background: var(--p-surface-0);
-  color: var(--p-surface-950);
+  color: #111827;
 }
 
 .password-requirements {
   margin: 0;
   padding-left: 1rem;
-  color: var(--p-surface-950);
+  color: #111827;
   line-height: 1.35;
 }
 
 .password-requirements li {
   margin-bottom: 0.25rem;
-}
-
-:host ::ng-deep .p-message,
-:host ::ng-deep .p-message-text,
-:host ::ng-deep .p-message-summary,
-:host ::ng-deep .p-message-detail {
-  color: var(--p-surface-950);
 }

@@ -11,19 +11,37 @@
   gap: 1rem;
 }
 
+.groups-grid :global(.p-card) {
+  background: var(--p-surface-0);
+  color: #111827;
+  border: 1px solid var(--p-content-border-color);
+}
+
+.groups-grid :global(.p-card-title) {
+  color: #111827;
+  font-weight: 700;
+}
+
 .display-box {
   min-height: 140px;
-  border: 1px dashed var(--p-content-border-color);
+  border: 2px solid var(--p-primary-color);
   border-radius: 0.75rem;
   display: grid;
   place-items: center;
-  background: var(--p-surface-100);
+  background: var(--p-surface-50);
+  color: #111827;
 }
 
 .display-box span {
   font-size: 2.3rem;
   font-weight: 700;
   line-height: 1;
+  color: #111827;
+}
+
+.display-box :global(.p-tag) {
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 
 .groups-crud-card {
