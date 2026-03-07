@@ -7,6 +7,7 @@ import { MessageModule } from 'primeng/message';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { TextareaModule } from 'primeng/textarea';
+import { PermissionsService } from '../../services/permissions.service';
 import { ErpStoreService } from '../../shared/erp-store.service';
 
 @Component({
@@ -27,6 +28,7 @@ import { ErpStoreService } from '../../shared/erp-store.service';
 })
 export class GroupsComponent {
   private readonly erpStore = inject(ErpStoreService);
+  private readonly permissionsService = inject(PermissionsService);
 
   readonly groups = computed(() => this.erpStore.groups());
   readonly totalGroups = computed(() => this.groups().length);
@@ -61,8 +63,34 @@ export class GroupsComponent {
   });
 
   readonly isEditing = computed(() => this.editingGroupId() !== null);
+  readonly canViewGroups = computed(() =>
+    this.permissionsService.hasPermission('group:view')
+  );
+  readonly canSaveGroups = computed(() =>
+    this.permissionsService.hasAnyPermission(['group:add', 'group:edit'])
+  );
+  readonly canEditGroups = computed(() =>
+    this.permissionsService.hasPermission('group:edit')
+  );
+  readonly canDeleteGroups = computed(() =>
+    this.permissionsService.hasPermission('group:delete')
+  );
 
   onSubmit(): void {
+    const canAdd = this.permissionsService.hasPermission('group:add');
+    const canEdit = this.permissionsService.hasPermission('group:edit');
+    const editing = this.isEditing();
+
+    if ((editing && !canEdit) || (!editing && !canAdd)) {
+      this.feedback.set({
+        severity: 'error',
+        text: editing
+          ? 'No cuentas con permiso para editar grupos.'
+          : 'No cuentas con permiso para agregar grupos.'
+      });
+      return;
+    }
+
     this.normalizeTextFields();
     this.groupsForm.markAllAsTouched();
 
@@ -96,6 +124,14 @@ export class GroupsComponent {
   }
 
   onEdit(groupId: string): void {
+    if (!this.permissionsService.hasPermission('group:edit')) {
+      this.feedback.set({
+        severity: 'error',
+        text: 'No cuentas con permiso para editar grupos.'
+      });
+      return;
+    }
+
     const targetGroup = this.groups().find((item) => item.id === groupId);
     if (!targetGroup) {
       return;
@@ -118,6 +154,14 @@ export class GroupsComponent {
   }
 
   onDelete(groupId: string): void {
+    if (!this.permissionsService.hasPermission('group:delete')) {
+      this.feedback.set({
+        severity: 'error',
+        text: 'No cuentas con permiso para eliminar grupos.'
+      });
+      return;
+    }
+
     this.erpStore.deleteGroup(groupId);
 
     if (this.editingGroupId() === groupId) {

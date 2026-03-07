@@ -13,6 +13,7 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
+import { PermissionsService } from '../../services/permissions.service';
 import { ErpStoreService } from '../../shared/erp-store.service';
 
 function hasSpecialCharacter(value: string): boolean {
@@ -76,9 +77,21 @@ function matchingPasswordsValidator(): ValidatorFn {
 })
 export class UsersComponent {
   private readonly erpStore = inject(ErpStoreService);
+  private readonly permissionsService = inject(PermissionsService);
 
   readonly profile = computed(() => this.erpStore.profile());
   readonly feedback = signal<{ severity: 'success' | 'error' | 'warn'; text: string } | null>(null);
+  readonly canViewUsers = computed(() => this.permissionsService.hasPermission('user:view'));
+  readonly canAddUsers = computed(() => this.permissionsService.hasPermission('user:add'));
+  readonly canEditUsers = computed(() => this.permissionsService.hasPermission('user:edit'));
+  readonly canSaveUsers = computed(() => {
+    if (this.profile()) {
+      return this.canEditUsers();
+    }
+
+    return this.canAddUsers();
+  });
+  readonly canDeleteUsers = computed(() => this.permissionsService.hasPermission('user:delete'));
 
   readonly usersForm = new FormGroup(
     {
@@ -174,6 +187,20 @@ export class UsersComponent {
   }
 
   onSubmit(): void {
+    const canAdd = this.permissionsService.hasPermission('user:add');
+    const canEdit = this.permissionsService.hasPermission('user:edit');
+    const hasProfile = this.profile() !== null;
+
+    if ((hasProfile && !canEdit) || (!hasProfile && !canAdd)) {
+      this.feedback.set({
+        severity: 'error',
+        text: hasProfile
+          ? 'No cuentas con permiso para editar usuarios.'
+          : 'No cuentas con permiso para agregar usuarios.'
+      });
+      return;
+    }
+
     this.normalizeTextFields();
     this.usersForm.markAllAsTouched();
 
@@ -195,6 +222,14 @@ export class UsersComponent {
   }
 
   onDeleteProfile(): void {
+    if (!this.permissionsService.hasPermission('user:delete')) {
+      this.feedback.set({
+        severity: 'error',
+        text: 'No cuentas con permiso para eliminar usuarios.'
+      });
+      return;
+    }
+
     this.erpStore.clearProfile();
     this.feedback.set({
       severity: 'warn',

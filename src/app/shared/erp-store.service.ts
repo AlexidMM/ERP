@@ -21,17 +21,29 @@ export interface GroupRecord {
   descripcion: string;
 }
 
+export interface TicketRecord {
+  id: string;
+  title: string;
+  assignedTo: string;
+  priority: 'Alta' | 'Media' | 'Baja';
+  status: 'Abierto' | 'En proceso' | 'Cerrado';
+  notes: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ErpStoreService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly profileStorageKey = 'erp.profile';
   private readonly groupsStorageKey = 'erp.groups';
+  private readonly ticketsStorageKey = 'erp.tickets';
 
   private readonly _profile = signal<ProfileRecord | null>(this.readProfileFromStorage());
   private readonly _groups = signal<GroupRecord[]>(this.readGroupsFromStorage());
+  private readonly _tickets = signal<TicketRecord[]>(this.readTicketsFromStorage());
 
   readonly profile = this._profile.asReadonly();
   readonly groups = this._groups.asReadonly();
+  readonly tickets = this._tickets.asReadonly();
 
   saveProfile(profile: ProfileRecord): void {
     this._profile.set(profile);
@@ -69,12 +81,42 @@ export class ErpStoreService {
     this.writeStorage(this.groupsStorageKey, next);
   }
 
+  upsertTicket(ticket: Omit<TicketRecord, 'id'>, id?: string): void {
+    const current = this._tickets();
+
+    if (id) {
+      const updated = current.map((item) => (item.id === id ? { ...item, ...ticket, id } : item));
+      this._tickets.set(updated);
+      this.writeStorage(this.ticketsStorageKey, updated);
+      return;
+    }
+
+    const created: TicketRecord = {
+      ...ticket,
+      id: this.generateId()
+    };
+
+    const next = [...current, created];
+    this._tickets.set(next);
+    this.writeStorage(this.ticketsStorageKey, next);
+  }
+
+  deleteTicket(id: string): void {
+    const next = this._tickets().filter((item) => item.id !== id);
+    this._tickets.set(next);
+    this.writeStorage(this.ticketsStorageKey, next);
+  }
+
   private readProfileFromStorage(): ProfileRecord | null {
     return this.readStorage<ProfileRecord>(this.profileStorageKey);
   }
 
   private readGroupsFromStorage(): GroupRecord[] {
     return this.readStorage<GroupRecord[]>(this.groupsStorageKey) ?? [];
+  }
+
+  private readTicketsFromStorage(): TicketRecord[] {
+    return this.readStorage<TicketRecord[]>(this.ticketsStorageKey) ?? [];
   }
 
   private readStorage<T>(key: string): T | null {

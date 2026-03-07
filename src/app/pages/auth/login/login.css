@@ -48,3 +48,32 @@ p-password {
   background: var(--p-surface-0);
   color: #111827;
 }
+
+.credentials-guide {
+  border: 1px dashed var(--p-primary-color);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: var(--p-surface-50);
+  display: grid;
+  gap: 0.6rem;
+}
+
+.credentials-guide h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.credential-item {
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-content-border-color);
+}
+
+.credential-item p {
+  margin: 0.15rem 0;
+}
+
+.role {
+  font-weight: 700;
+}

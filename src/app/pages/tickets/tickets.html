@@ -1,0 +1,145 @@
+<section class="tickets" aria-label="Administracion de tickets">
+  @if (!canViewTickets()) {
+    <p-message severity="warn" text="No tienes permiso para ver Tickets."></p-message>
+  } @else {
+    <div class="tickets-grid">
+      <p-card header="Total de tickets">
+        <div class="display-box">
+          <span>{{ totalTickets() }}</span>
+        </div>
+      </p-card>
+
+      <p-card header="Estado general">
+        <div class="display-box">
+          <p-tag [value]="totalTickets() > 0 ? 'Con tickets' : 'Sin tickets'" [severity]="totalTickets() > 0 ? 'info' : 'warn'"></p-tag>
+        </div>
+      </p-card>
+    </div>
+
+    <p-card class="tickets-crud-card" header="CRUD de Tickets">
+      @if (feedback(); as status) {
+        <p-message [severity]="status.severity" [text]="status.text"></p-message>
+      }
+
+      <form [formGroup]="ticketsForm" (ngSubmit)="onSubmit()" novalidate class="tickets-form">
+        <div class="tickets-form-grid">
+          <div class="field-item">
+            <label for="title">Titulo</label>
+            <input id="title" pInputText type="text" formControlName="title" />
+            @if (ticketsForm.controls.title.touched && ticketsForm.controls.title.hasError('required')) {
+              <p-message severity="error" text="El titulo es obligatorio."></p-message>
+            }
+          </div>
+
+          <div class="field-item">
+            <label for="assignedTo">Asignado a</label>
+            <input id="assignedTo" pInputText type="text" formControlName="assignedTo" />
+            @if (ticketsForm.controls.assignedTo.touched && ticketsForm.controls.assignedTo.hasError('required')) {
+              <p-message severity="error" text="El responsable es obligatorio."></p-message>
+            }
+          </div>
+
+          <div class="field-item">
+            <label for="priority">Prioridad</label>
+            <p-select inputId="priority" [options]="priorities" formControlName="priority"></p-select>
+          </div>
+
+          <div class="field-item">
+            <label for="status">Estado</label>
+            <p-select inputId="status" [options]="statuses" formControlName="status"></p-select>
+          </div>
+
+          <div class="field-item field-item--full">
+            <label for="notes">Notas</label>
+            <textarea id="notes" pTextarea rows="3" formControlName="notes"></textarea>
+            @if (ticketsForm.controls.notes.touched && ticketsForm.controls.notes.hasError('required')) {
+              <p-message severity="error" text="Las notas son obligatorias."></p-message>
+            }
+            @if (ticketsForm.controls.notes.touched && ticketsForm.controls.notes.hasError('minlength')) {
+              <p-message severity="error" text="Minimo 5 caracteres en notas."></p-message>
+            }
+          </div>
+        </div>
+
+        <div class="tickets-actions">
+          @if (canSubmitCurrentAction()) {
+            <p-button
+              type="submit"
+              [label]="submitButtonLabel()"
+            ></p-button>
+          }
+          @if (canEditTickets() || canEditTicketState()) {
+            <p-button
+            type="button"
+            severity="secondary"
+            label="Cancelar"
+            [disabled]="!isEditing()"
+            (onClick)="onCancelEdit()"
+            ></p-button>
+          }
+        </div>
+      </form>
+
+      <div class="tickets-list" aria-label="Tabla de tickets">
+        @if (tickets().length === 0) {
+          <p-message severity="info" text="No hay tickets registrados todavia."></p-message>
+        } @else {
+          <p-table [value]="tickets()" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Titulo</th>
+                <th>Asignado</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Notas</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-ticket>
+              <tr>
+                <td>{{ ticket.title }}</td>
+                <td>{{ ticket.assignedTo }}</td>
+                <td>
+                  <p-tag [value]="ticket.priority" [severity]="prioritySeverity(ticket.priority)"></p-tag>
+                </td>
+                <td>
+                  <p-tag [value]="ticket.status" [severity]="statusSeverity(ticket.status)"></p-tag>
+                </td>
+                <td>{{ ticket.notes }}</td>
+                <td>
+                  <div class="table-actions">
+                    <p-button
+                      *ifHasPermission="['ticket:edit']"
+                      type="button"
+                      size="small"
+                      label="Editar"
+                      severity="info"
+                      (onClick)="onEdit(ticket.id)"
+                    ></p-button>
+                    <p-button
+                      *ifHasPermission="['ticket:edit_state']"
+                      type="button"
+                      size="small"
+                      label="Cambiar estado"
+                      severity="secondary"
+                      (onClick)="onEditStatus(ticket.id)"
+                    ></p-button>
+                    <p-button
+                      *ifHasPermission="['ticket:delete']"
+                      type="button"
+                      size="small"
+                      label="Eliminar"
+                      severity="danger"
+                      (onClick)="onDelete(ticket.id)"
+                    ></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        }
+      </div>
+    </p-card>
+  }
+</section>

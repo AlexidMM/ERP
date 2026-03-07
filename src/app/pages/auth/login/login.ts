@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
+import { PermissionsService, UserRole } from '../../../services/permissions.service';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,20 @@ import { PasswordModule } from 'primeng/password';
 })
 export class LoginComponent {
   private readonly router = inject(Router);
+  private readonly permissionsService = inject(PermissionsService);
 
-  private readonly hardcodedCredentials = {
-    email: 'admin@erp.com',
-    password: 'Admin@12345'
-  };
+  private readonly hardcodedCredentials: Array<{ email: string; password: string; role: UserRole }> = [
+    {
+      email: 'admin@erp.com',
+      password: 'Admin@12345',
+      role: 'admin'
+    },
+    {
+      email: 'user@erp.com',
+      password: 'User@12345',
+      role: 'common'
+    }
+  ];
 
   readonly loginForm = new FormGroup({
     email: new FormControl('', {
@@ -46,10 +56,12 @@ export class LoginComponent {
     }
 
     const { email, password } = this.loginForm.getRawValue();
-    const isValidUser =
-      email === this.hardcodedCredentials.email && password === this.hardcodedCredentials.password;
+    const currentUser = this.hardcodedCredentials.find(
+      (credential) => credential.email === email && credential.password === password
+    );
 
-    if (!isValidUser) {
+    if (!currentUser) {
+      this.permissionsService.clearPermissions();
       this.feedback.set({
         severity: 'error',
         text: 'Credenciales inválidas. Intenta de nuevo.'
@@ -59,8 +71,10 @@ export class LoginComponent {
 
     this.feedback.set({
       severity: 'success',
-      text: 'Inicio de sesión correcto.'
+      text: `Inicio de sesión correcto. Perfil: ${currentUser.role}.`
     });
+
+    this.permissionsService.setPermissions(this.permissionsService.getPermissionsByRole(currentUser.role));
 
     void this.router.navigateByUrl('/home');
   }

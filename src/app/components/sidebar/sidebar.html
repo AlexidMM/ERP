@@ -4,7 +4,21 @@
     <span>ERP</span>
   </header>
 
-  <p-panelmenu [model]="menuItems"></p-panelmenu>
+  <p-panelmenu [model]="menuItems()"></p-panelmenu>
+
+  @if (!canAccessAnyFeature()) {
+    <p-message severity="warn" text="Usuario sin permisos de modulos."></p-message>
+  }
+
+  <button
+    pButton
+    type="button"
+    icon="pi pi-sign-out"
+    label="Cerrar sesion"
+    class="action-button"
+    severity="secondary"
+    (onClick)="onLogout()"
+  ></button>
 
   <footer class="sidebar-footer">
     <p class="sidebar-version">ERP v4</p>

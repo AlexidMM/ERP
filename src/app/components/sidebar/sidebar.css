@@ -136,6 +136,10 @@
   padding-top: 0.5rem;
 }
 
+.action-button {
+  width: 100%;
+}
+
 .sidebar-version {
   margin: 0;
   padding: 0.65rem 0.75rem;

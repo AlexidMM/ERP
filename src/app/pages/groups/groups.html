@@ -1,140 +1,171 @@
 <section class="groups" aria-label="Resumen de grupos">
-  <div class="groups-grid">
-    <p-card header="Total:">
-      <div class="display-box">
-        <span>{{ totalGroups() }}</span>
-      </div>
-    </p-card>
+  @if (!canViewGroups()) {
+    <p-message severity="warn" text="No tienes permiso para ver Groups."></p-message>
+  } @else {
+    <div class="groups-grid">
+      <p-card header="Total:">
+        <div class="display-box">
+          <span>{{ totalGroups() }}</span>
+        </div>
+      </p-card>
 
-    <p-card header="Estado">
-      <div class="display-box">
-        <p-tag [value]="totalGroups() > 0 ? 'Con grupos' : 'Sin grupos'" [severity]="totalGroups() > 0 ? 'success' : 'warn'"></p-tag>
-      </div>
-    </p-card>
-  </div>
+      <p-card header="Estado">
+        <div class="display-box">
+          <p-tag [value]="totalGroups() > 0 ? 'Con grupos' : 'Sin grupos'" [severity]="totalGroups() > 0 ? 'success' : 'warn'"></p-tag>
+        </div>
+      </p-card>
+    </div>
 
-  <p-card class="groups-crud-card" header="CRUD de Groups">
-    @if (feedback(); as status) {
-      <p-message [severity]="status.severity" [text]="status.text"></p-message>
-    }
+    <p-card class="groups-crud-card" header="CRUD de Groups">
+      @if (feedback(); as status) {
+        <p-message [severity]="status.severity" [text]="status.text"></p-message>
+      }
 
-    <form [formGroup]="groupsForm" (ngSubmit)="onSubmit()" novalidate class="groups-form">
-      <div class="groups-form-grid">
-        <div class="field-item">
-          <label for="nivel">Nivel</label>
-          <input id="nivel" pInputText type="text" formControlName="nivel" />
-          @if (groupsForm.controls.nivel.touched && groupsForm.controls.nivel.hasError('required')) {
-            <p-message severity="error" text="El nivel es obligatorio."></p-message>
-          }
+      <form [formGroup]="groupsForm" (ngSubmit)="onSubmit()" novalidate class="groups-form">
+        <div class="groups-form-grid">
+          <div class="field-item">
+            <label for="nivel">Nivel</label>
+            <input id="nivel" pInputText type="text" formControlName="nivel" />
+            @if (groupsForm.controls.nivel.touched && groupsForm.controls.nivel.hasError('required')) {
+              <p-message severity="error" text="El nivel es obligatorio."></p-message>
+            }
+          </div>
+
+          <div class="field-item">
+            <label for="autor">Autor</label>
+            <input id="autor" pInputText type="text" formControlName="autor" />
+            @if (groupsForm.controls.autor.touched && groupsForm.controls.autor.hasError('required')) {
+              <p-message severity="error" text="El autor es obligatorio."></p-message>
+            }
+          </div>
+
+          <div class="field-item">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" pInputText type="text" formControlName="nombre" />
+            @if (groupsForm.controls.nombre.touched && groupsForm.controls.nombre.hasError('required')) {
+              <p-message severity="error" text="El nombre es obligatorio."></p-message>
+            }
+          </div>
+
+          <div class="field-item">
+            <label for="integrantes">Integrantes</label>
+            <input
+              id="integrantes"
+              pInputText
+              type="text"
+              inputmode="numeric"
+              formControlName="integrantes"
+              (input)="onDigitsInput('integrantes', $event)"
+            />
+            @if (groupsForm.controls.integrantes.touched && groupsForm.controls.integrantes.hasError('required')) {
+              <p-message severity="error" text="Integrantes es obligatorio."></p-message>
+            }
+            @if (groupsForm.controls.integrantes.touched && groupsForm.controls.integrantes.hasError('pattern')) {
+              <p-message severity="error" text="Solo números para integrantes."></p-message>
+            }
+          </div>
+
+          <div class="field-item">
+            <label for="tickets">Tickets</label>
+            <input
+              id="tickets"
+              pInputText
+              type="text"
+              inputmode="numeric"
+              formControlName="tickets"
+              (input)="onDigitsInput('tickets', $event)"
+            />
+            @if (groupsForm.controls.tickets.touched && groupsForm.controls.tickets.hasError('required')) {
+              <p-message severity="error" text="Tickets es obligatorio."></p-message>
+            }
+            @if (groupsForm.controls.tickets.touched && groupsForm.controls.tickets.hasError('pattern')) {
+              <p-message severity="error" text="Solo números para tickets."></p-message>
+            }
+          </div>
+
+          <div class="field-item field-item--full">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" pTextarea rows="3" formControlName="descripcion"></textarea>
+            @if (groupsForm.controls.descripcion.touched && groupsForm.controls.descripcion.hasError('required')) {
+              <p-message severity="error" text="La descripción es obligatoria."></p-message>
+            }
+            @if (groupsForm.controls.descripcion.touched && groupsForm.controls.descripcion.hasError('minlength')) {
+              <p-message severity="error" text="Mínimo 5 caracteres en descripción."></p-message>
+            }
+          </div>
         </div>
 
-        <div class="field-item">
-          <label for="autor">Autor</label>
-          <input id="autor" pInputText type="text" formControlName="autor" />
-          @if (groupsForm.controls.autor.touched && groupsForm.controls.autor.hasError('required')) {
-            <p-message severity="error" text="El autor es obligatorio."></p-message>
+        <div class="groups-actions">
+          @if (canSaveGroups()) {
+            <p-button
+              type="submit"
+              [label]="isEditing() ? 'Guardar cambios' : 'Agregar grupo'"
+            ></p-button>
+          }
+          @if (canEditGroups()) {
+            <p-button
+              type="button"
+              severity="secondary"
+              label="Cancelar"
+              [disabled]="!isEditing()"
+              (onClick)="onCancelEdit()"
+            ></p-button>
           }
         </div>
+      </form>
 
-        <div class="field-item">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" pInputText type="text" formControlName="nombre" />
-          @if (groupsForm.controls.nombre.touched && groupsForm.controls.nombre.hasError('required')) {
-            <p-message severity="error" text="El nombre es obligatorio."></p-message>
-          }
-        </div>
+      <div class="groups-list" aria-label="Tabla de grupos">
+        @if (groups().length === 0) {
+          <p-message severity="info" text="No hay grupos registrados todavía."></p-message>
+        } @else {
+          <p-table [value]="groups()" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Nivel</th>
+                <th>Autor</th>
+                <th>Nombre</th>
+                <th>Integrantes</th>
+                <th>Tickets</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
 
-        <div class="field-item">
-          <label for="integrantes">Integrantes</label>
-          <input
-            id="integrantes"
-            pInputText
-            type="text"
-            inputmode="numeric"
-            formControlName="integrantes"
-            (input)="onDigitsInput('integrantes', $event)"
-          />
-          @if (groupsForm.controls.integrantes.touched && groupsForm.controls.integrantes.hasError('required')) {
-            <p-message severity="error" text="Integrantes es obligatorio."></p-message>
-          }
-          @if (groupsForm.controls.integrantes.touched && groupsForm.controls.integrantes.hasError('pattern')) {
-            <p-message severity="error" text="Solo números para integrantes."></p-message>
-          }
-        </div>
-
-        <div class="field-item">
-          <label for="tickets">Tickets</label>
-          <input
-            id="tickets"
-            pInputText
-            type="text"
-            inputmode="numeric"
-            formControlName="tickets"
-            (input)="onDigitsInput('tickets', $event)"
-          />
-          @if (groupsForm.controls.tickets.touched && groupsForm.controls.tickets.hasError('required')) {
-            <p-message severity="error" text="Tickets es obligatorio."></p-message>
-          }
-          @if (groupsForm.controls.tickets.touched && groupsForm.controls.tickets.hasError('pattern')) {
-            <p-message severity="error" text="Solo números para tickets."></p-message>
-          }
-        </div>
-
-        <div class="field-item field-item--full">
-          <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" pTextarea rows="3" formControlName="descripcion"></textarea>
-          @if (groupsForm.controls.descripcion.touched && groupsForm.controls.descripcion.hasError('required')) {
-            <p-message severity="error" text="La descripción es obligatoria."></p-message>
-          }
-          @if (groupsForm.controls.descripcion.touched && groupsForm.controls.descripcion.hasError('minlength')) {
-            <p-message severity="error" text="Mínimo 5 caracteres en descripción."></p-message>
-          }
-        </div>
-      </div>
-
-      <div class="groups-actions">
-        <p-button type="submit" [label]="isEditing() ? 'Guardar cambios' : 'Agregar grupo'"></p-button>
-        @if (isEditing()) {
-          <p-button type="button" severity="secondary" label="Cancelar" (onClick)="onCancelEdit()"></p-button>
+            <ng-template pTemplate="body" let-group>
+              <tr>
+                <td>{{ group.nivel }}</td>
+                <td>{{ group.autor }}</td>
+                <td>{{ group.nombre }}</td>
+                <td>{{ group.integrantes }}</td>
+                <td>{{ group.tickets }}</td>
+                <td>{{ group.descripcion }}</td>
+                <td>
+                  <div class="table-actions">
+                    @if (canEditGroups()) {
+                      <p-button
+                        type="button"
+                        size="small"
+                        label="Editar"
+                        severity="info"
+                        (onClick)="onEdit(group.id)"
+                      ></p-button>
+                    }
+                    @if (canDeleteGroups()) {
+                      <p-button
+                        type="button"
+                        size="small"
+                        label="Eliminar"
+                        severity="danger"
+                        (onClick)="onDelete(group.id)"
+                      ></p-button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
         }
       </div>
-    </form>
-
-    <div class="groups-list" aria-label="Tabla de grupos">
-      @if (groups().length === 0) {
-        <p-message severity="info" text="No hay grupos registrados todavía."></p-message>
-      } @else {
-        <p-table [value]="groups()" styleClass="p-datatable-sm">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Nivel</th>
-              <th>Autor</th>
-              <th>Nombre</th>
-              <th>Integrantes</th>
-              <th>Tickets</th>
-              <th>Descripción</th>
-              <th>Acciones</th>
-            </tr>
-          </ng-template>
-
-          <ng-template pTemplate="body" let-group>
-            <tr>
-              <td>{{ group.nivel }}</td>
-              <td>{{ group.autor }}</td>
-              <td>{{ group.nombre }}</td>
-              <td>{{ group.integrantes }}</td>
-              <td>{{ group.tickets }}</td>
-              <td>{{ group.descripcion }}</td>
-              <td>
-                <div class="table-actions">
-                  <p-button type="button" size="small" label="Editar" severity="info" (onClick)="onEdit(group.id)"></p-button>
-                  <p-button type="button" size="small" label="Eliminar" severity="danger" (onClick)="onDelete(group.id)"></p-button>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      }
-    </div>
-  </p-card>
+    </p-card>
+  }
 </section>
