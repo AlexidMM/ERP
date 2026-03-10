@@ -2,130 +2,180 @@
   @if (!canViewUsers()) {
     <p-message severity="warn" text="No tienes permiso para ver Users."></p-message>
   } @else {
-    <p-card>
-      <h2 class="users-title">PERFIL</h2>
+    <div class="users-layout">
+      <p-card>
+        <h2 class="users-title">Perfil de Usuario</h2>
 
-      @if (feedback(); as status) {
-        <p-message [severity]="status.severity" [text]="status.text"></p-message>
-      }
+        @if (feedback(); as status) {
+          <p-message [severity]="status.severity" [text]="status.text"></p-message>
+        }
 
-      @if (!profile()) {
-        <p-message severity="warn" text="No hay datos de registro guardados todavía."></p-message>
-      }
+        @if (!profile()) {
+          <p-message severity="warn" text="No hay datos de registro guardados todavia."></p-message>
+        }
 
-      @if (canManageUsers()) {
-        <form [formGroup]="usersForm" (ngSubmit)="onSubmit()" novalidate>
-          <div class="users-grid">
-            <div class="field-item">
-              <label for="username">Usuario</label>
-              <input id="username" pInputText type="text" formControlName="username" (input)="onTextInputWithoutSpaces('username', $event)" />
-              @if (usersForm.controls.username.touched && usersForm.controls.username.hasError('required')) {
-                <p-message severity="error" text="El usuario es obligatorio"></p-message>
-              }
+        @if (canManageUsers()) {
+          <form [formGroup]="usersForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="users-grid">
+              <div class="field-item">
+                <label for="username">Usuario</label>
+                <input id="username" pInputText type="text" formControlName="username" (input)="onTextInputWithoutSpaces('username', $event)" />
+                @if (usersForm.controls.username.touched && usersForm.controls.username.hasError('required')) {
+                  <p-message severity="error" text="El usuario es obligatorio"></p-message>
+                }
+              </div>
+
+              <div class="field-item">
+                <label for="email">Email</label>
+                <input id="email" pInputText type="email" formControlName="email" (input)="onTextInputWithoutSpaces('email', $event)" />
+                @if (usersForm.controls.email.touched && usersForm.controls.email.hasError('required')) {
+                  <p-message severity="error" text="El email es obligatorio"></p-message>
+                }
+                @if (usersForm.controls.email.touched && usersForm.controls.email.hasError('email')) {
+                  <p-message severity="error" text="Ingresa un email valido"></p-message>
+                }
+              </div>
+
+              <div class="field-item">
+                <label for="fullName">Nombre completo</label>
+                <input id="fullName" pInputText type="text" formControlName="fullName" />
+                @if (usersForm.controls.fullName.touched && usersForm.controls.fullName.hasError('required')) {
+                  <p-message severity="error" text="El nombre completo es obligatorio"></p-message>
+                }
+              </div>
+
+              <div class="field-item">
+                <label for="address">Direccion</label>
+                <input id="address" pInputText type="text" formControlName="address" />
+                @if (usersForm.controls.address.touched && usersForm.controls.address.hasError('required')) {
+                  <p-message severity="error" text="La direccion es obligatoria"></p-message>
+                }
+              </div>
+
+              <div class="field-item">
+                <label for="phone">Telefono</label>
+                <input id="phone" pInputText type="tel" maxlength="10" formControlName="phone" (input)="onPhoneInput($event)" />
+                @if (usersForm.controls.phone.touched && usersForm.controls.phone.hasError('required')) {
+                  <p-message severity="error" text="El telefono es obligatorio"></p-message>
+                }
+                @if (usersForm.controls.phone.touched && usersForm.controls.phone.hasError('pattern')) {
+                  <p-message severity="error" text="El telefono debe contener solo 10 numeros"></p-message>
+                }
+              </div>
+
+              <div class="field-item">
+                <label for="birthDate">Fecha de nacimiento</label>
+                <input id="birthDate" pInputText type="date" formControlName="birthDate" />
+                @if (usersForm.controls.birthDate.touched && usersForm.controls.birthDate.hasError('required')) {
+                  <p-message severity="error" text="La fecha de nacimiento es obligatoria"></p-message>
+                }
+              </div>
+
+              <div class="field-item">
+                <label>Contrasena</label>
+                <p-password formControlName="password" [toggleMask]="true" [fluid]="true" [feedback]="false"></p-password>
+              </div>
+
+              <div class="field-item">
+                <label>Confirmar contrasena</label>
+                <p-password formControlName="confirmPassword" [toggleMask]="true" [fluid]="true" [feedback]="false"></p-password>
+                @if (usersForm.touched && usersForm.hasError('passwordMismatch')) {
+                  <p-message severity="error" text="Las contrasenas no coinciden"></p-message>
+                }
+              </div>
             </div>
 
-            <div class="field-item">
-              <label for="email">Email</label>
-              <input id="email" pInputText type="email" formControlName="email" (input)="onTextInputWithoutSpaces('email', $event)" />
-              @if (usersForm.controls.email.touched && usersForm.controls.email.hasError('required')) {
-                <p-message severity="error" text="El email es obligatorio"></p-message>
+            <div class="users-actions">
+              @if (canSaveUsers()) {
+                <p-button type="submit" [label]="profile() ? 'Guardar perfil' : 'Crear perfil'"></p-button>
               }
-              @if (usersForm.controls.email.touched && usersForm.controls.email.hasError('email')) {
-                <p-message severity="error" text="Ingresa un email válido"></p-message>
+              @if (canDeleteUsers()) {
+                <p-button type="button" severity="danger" label="Borrar perfil" (onClick)="onDeleteProfile()"></p-button>
               }
             </div>
+          </form>
+        } @else {
+          <p-message severity="info" text="Modo solo lectura: puedes consultar usuarios, pero no crear o editar perfiles."></p-message>
+        }
+      </p-card>
 
+      <p-card header="Carga de Trabajo del Usuario">
+        <div class="workload-grid">
+          <article class="workload-item">
+            <h4>Tickets asignados</h4>
+            <p>{{ assignedTickets().length }}</p>
+          </article>
+          <article class="workload-item">
+            <h4>Abiertos / en curso</h4>
+            <p>{{ openTickets() }}</p>
+          </article>
+          <article class="workload-item">
+            <h4>Finalizados</h4>
+            <p>{{ completedTickets() }}</p>
+          </article>
+        </div>
+
+        @if (assignedTickets().length === 0) {
+          <p-message severity="info" text="No hay tickets asignados al usuario actual."></p-message>
+        } @else {
+          <p-table [value]="assignedTickets()" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Titulo</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Limite</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-ticket>
+              <tr>
+                <td>{{ ticket.title }}</td>
+                <td><p-tag [value]="ticket.status" [severity]="ticketStatusSeverity(ticket.status)"></p-tag></td>
+                <td><p-tag [value]="ticket.priority" severity="contrast"></p-tag></td>
+                <td>{{ formatDate(ticket.dueDate) }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        }
+      </p-card>
+
+      @if (canManagePermissionAssignments()) {
+        <p-card header="Gestion de Permisos por Usuario">
+          <div class="permissions-grid">
             <div class="field-item">
-              <label for="fullName">Nombre completo</label>
-              <input id="fullName" pInputText type="text" formControlName="fullName" />
-              @if (usersForm.controls.fullName.touched && usersForm.controls.fullName.hasError('required')) {
-                <p-message severity="error" text="El nombre completo es obligatorio"></p-message>
-              }
+              <label for="permission-target">Usuario objetivo</label>
+              <p-select
+                inputId="permission-target"
+                [options]="knownUsers()"
+                [ngModel]="permissionTarget()"
+                (ngModelChange)="onPermissionTargetChange($event)"
+              ></p-select>
             </div>
 
-            <div class="field-item">
-              <label for="address">Dirección</label>
-              <input id="address" pInputText type="text" formControlName="address" />
-              @if (usersForm.controls.address.touched && usersForm.controls.address.hasError('required')) {
-                <p-message severity="error" text="La dirección es obligatoria"></p-message>
-              }
-            </div>
-
-            <div class="field-item">
-              <label for="phone">Teléfono</label>
-              <input id="phone" pInputText type="tel" maxlength="10" formControlName="phone" (input)="onPhoneInput($event)" />
-              @if (usersForm.controls.phone.touched && usersForm.controls.phone.hasError('required')) {
-                <p-message severity="error" text="El teléfono es obligatorio"></p-message>
-              }
-              @if (usersForm.controls.phone.touched && usersForm.controls.phone.hasError('pattern')) {
-                <p-message severity="error" text="El teléfono debe contener solo 10 números"></p-message>
-              }
-            </div>
-
-            <div class="field-item">
-              <label for="birthDate">Fecha de nacimiento</label>
-              <input id="birthDate" pInputText type="date" formControlName="birthDate" />
-              @if (usersForm.controls.birthDate.touched && usersForm.controls.birthDate.hasError('required')) {
-                <p-message severity="error" text="La fecha de nacimiento es obligatoria"></p-message>
-              }
-            </div>
-
-            <div class="field-item">
-              <label>Contraseña</label>
-              <p-password
-                formControlName="password"
-                [toggleMask]="true"
-                [fluid]="true"
-                [feedback]="false"
-              ></p-password>
-              @if (usersForm.controls.password.touched && usersForm.controls.password.hasError('required')) {
-                <p-message severity="error" text="La contraseña es obligatoria"></p-message>
-              }
-              @if (usersForm.controls.password.touched && usersForm.controls.password.hasError('minLengthPassword')) {
-                <p-message severity="error" text="La contraseña debe tener al menos 10 caracteres"></p-message>
-              }
-              @if (usersForm.controls.password.touched && usersForm.controls.password.hasError('missingSpecialCharacter')) {
-                <p-message severity="error" text="Debe incluir un símbolo especial"></p-message>
-              }
-            </div>
-
-            <div class="field-item">
-              <label>Confirmar contraseña</label>
-              <p-password
-                formControlName="confirmPassword"
-                [toggleMask]="true"
-                [fluid]="true"
-                [feedback]="false"
-              ></p-password>
-              @if (usersForm.controls.confirmPassword.touched && usersForm.controls.confirmPassword.hasError('required')) {
-                <p-message severity="error" text="Confirma tu contraseña"></p-message>
-              }
-              @if (usersForm.touched && usersForm.hasError('passwordMismatch')) {
-                <p-message severity="error" text="Las contraseñas no coinciden"></p-message>
-              }
+            <div class="field-item field-item--full">
+              <label for="permission-selector">Permisos</label>
+              <p-multiselect
+                inputId="permission-selector"
+                [options]="availablePermissions"
+                [ngModel]="editablePermissions()"
+                (ngModelChange)="onPermissionSelectionChange($event)"
+                [showClear]="true"
+                [filter]="true"
+                placeholder="Selecciona permisos"
+              ></p-multiselect>
             </div>
           </div>
 
           <div class="users-actions">
-            @if (canSaveUsers()) {
-              <p-button
-                type="submit"
-                [label]="profile() ? 'Guardar perfil' : 'Crear perfil'"
-              ></p-button>
-            }
-            @if (canDeleteUsers()) {
-              <p-button
-                type="button"
-                severity="danger"
-                label="Borrar perfil"
-                (onClick)="onDeleteProfile()"
-              ></p-button>
-            }
+            <p-button
+              type="button"
+              icon="pi pi-shield"
+              label="Guardar permisos"
+              (onClick)="savePermissions()"
+            ></p-button>
           </div>
-        </form>
-      } @else {
-        <p-message severity="info" text="Modo solo lectura: puedes consultar usuarios, pero no crear o editar perfiles."></p-message>
+        </p-card>
       }
-    </p-card>
+    </div>
   }
 </section>

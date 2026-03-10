@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { PermissionsService } from '../../../services/permissions.service';
+import { ErpStoreService } from '../../../shared/erp-store.service';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ import { PermissionsService } from '../../../services/permissions.service';
 export class LoginComponent {
   private readonly router = inject(Router);
   private readonly permissionsService = inject(PermissionsService);
+  private readonly erpStore = inject(ErpStoreService);
 
   private readonly hardcodedCredentials: Array<{ email: string; password: string; permissions: string[] }> = [
     {
@@ -62,6 +64,8 @@ export class LoginComponent {
 
     if (!currentUser) {
       this.permissionsService.clearPermissions();
+      this.erpStore.clearSessionUser();
+      this.erpStore.clearSelectedGroup();
       this.feedback.set({
         severity: 'error',
         text: 'Credenciales inválidas. Intenta de nuevo.'
@@ -69,12 +73,17 @@ export class LoginComponent {
       return;
     }
 
+    const savedPermissions = this.erpStore.getUserPermissions(currentUser.email);
+    const finalPermissions = savedPermissions.length > 0 ? savedPermissions : currentUser.permissions;
+
     this.feedback.set({
       severity: 'success',
-      text: `Inicio de sesión correcto. Se cargaron ${currentUser.permissions.length} permisos.`
+      text: `Inicio de sesión correcto. Se cargaron ${finalPermissions.length} permisos.`
     });
 
-    this.permissionsService.setPermissions(currentUser.permissions);
+    this.permissionsService.setPermissions(finalPermissions);
+    this.erpStore.setSessionUser(currentUser.email);
+    this.erpStore.clearSelectedGroup();
 
     void this.router.navigateByUrl('/home');
   }

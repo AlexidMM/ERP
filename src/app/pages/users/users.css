@@ -1,6 +1,11 @@
 .users {
-  max-width: 980px;
+  max-width: 1180px;
   margin: 0 auto;
+}
+
+.users-layout {
+  display: grid;
+  gap: 1rem;
 }
 
 .users-title {
@@ -47,7 +52,44 @@
   flex-wrap: wrap;
 }
 
+.workload-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.workload-item {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.7rem;
+  background: var(--p-surface-100);
+  padding: 0.8rem;
+}
+
+.workload-item h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--p-text-muted-color);
+}
+
+.workload-item p {
+  margin: 0.35rem 0 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.permissions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.field-item--full {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 768px) {
+  .workload-grid,
   .users-grid {
     grid-template-columns: 1fr;
   }

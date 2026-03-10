@@ -1,6 +1,11 @@
 <section class="tickets" aria-label="Administracion de tickets">
   @if (!canViewTickets()) {
     <p-message severity="warn" text="No tienes permiso para ver Tickets."></p-message>
+  } @else if (!hasSelectedGroup()) {
+    <p-message
+      severity="warn"
+      text="Debes seleccionar un grupo en Home antes de usar el tablero de tickets."
+    ></p-message>
   } @else {
     <div class="tickets-grid">
       <p-card header="Total de tickets">
@@ -9,110 +14,183 @@
         </div>
       </p-card>
 
-      <p-card header="Estado general">
-        <div class="display-box">
-          <p-tag [value]="totalTickets() > 0 ? 'Con tickets' : 'Sin tickets'" [severity]="totalTickets() > 0 ? 'info' : 'warn'"></p-tag>
+      <p-card header="Acciones rapidas">
+        <div class="display-box display-box--actions">
+          <p-button label="Crear ticket" icon="pi pi-plus" (onClick)="openQuickCreate()"></p-button>
+          <p-button
+            label="Limpiar filtros"
+            severity="secondary"
+            variant="outlined"
+            icon="pi pi-filter-slash"
+            (onClick)="onStatusFilterChange('Todos'); onPriorityFilterChange('Todas'); quickSearch.set('')"
+          ></p-button>
         </div>
       </p-card>
     </div>
 
-    <p-card class="tickets-crud-card" header="CRUD de Tickets">
-      @if (feedback(); as status) {
-        <p-message [severity]="status.severity" [text]="status.text"></p-message>
-      }
+    @if (feedback(); as status) {
+      <p-message [severity]="status.severity" [text]="status.text"></p-message>
+    }
 
-      @if (canManageTickets()) {
-        <form [formGroup]="ticketsForm" (ngSubmit)="onSubmit()" novalidate class="tickets-form">
-          <div class="tickets-form-grid">
-            <div class="field-item">
-              <label for="title">Titulo</label>
-              <input id="title" pInputText type="text" formControlName="title" />
-              @if (ticketsForm.controls.title.touched && ticketsForm.controls.title.hasError('required')) {
-                <p-message severity="error" text="El titulo es obligatorio."></p-message>
-              }
-            </div>
+    <p-card header="Filtros rapidos">
+      <div class="quick-modes" aria-label="Filtros instantaneos">
+        <p-button
+          type="button"
+          size="small"
+          label="Todos"
+          [severity]="quickMode() === 'all' ? 'primary' : 'secondary'"
+          [variant]="quickMode() === 'all' ? undefined : 'outlined'"
+          (onClick)="onQuickModeChange('all')"
+        ></p-button>
+        <p-button
+          type="button"
+          size="small"
+          label="Mis tickets"
+          [severity]="quickMode() === 'mine' ? 'primary' : 'secondary'"
+          [variant]="quickMode() === 'mine' ? undefined : 'outlined'"
+          (onClick)="onQuickModeChange('mine')"
+        ></p-button>
+        <p-button
+          type="button"
+          size="small"
+          label="Sin asignar"
+          [severity]="quickMode() === 'unassigned' ? 'primary' : 'secondary'"
+          [variant]="quickMode() === 'unassigned' ? undefined : 'outlined'"
+          (onClick)="onQuickModeChange('unassigned')"
+        ></p-button>
+        <p-button
+          type="button"
+          size="small"
+          label="Prioridad alta"
+          [severity]="quickMode() === 'high' ? 'primary' : 'secondary'"
+          [variant]="quickMode() === 'high' ? undefined : 'outlined'"
+          (onClick)="onQuickModeChange('high')"
+        ></p-button>
+      </div>
 
-            <div class="field-item">
-              <label for="assignedTo">Asignado a</label>
-              <input id="assignedTo" pInputText type="text" formControlName="assignedTo" />
-              @if (ticketsForm.controls.assignedTo.touched && ticketsForm.controls.assignedTo.hasError('required')) {
-                <p-message severity="error" text="El responsable es obligatorio."></p-message>
-              }
-            </div>
+      <div class="filters-grid">
+        <div class="field-item">
+          <label for="ticket-search">Buscar ticket</label>
+          <input
+            id="ticket-search"
+            pInputText
+            type="text"
+            [value]="quickSearch()"
+            placeholder="Titulo, descripcion o asignado"
+            (input)="onSearchInput($event)"
+          />
+        </div>
+        <div class="field-item">
+          <label for="filter-status">Estado</label>
+          <p-select
+            inputId="filter-status"
+            [options]="statusFilterOptions"
+            [ngModel]="selectedStatusFilter()"
+            (ngModelChange)="onStatusFilterChange($event)"
+          ></p-select>
+        </div>
+        <div class="field-item">
+          <label for="filter-priority">Prioridad</label>
+          <p-select
+            inputId="filter-priority"
+            [options]="priorityFilterOptions"
+            [ngModel]="selectedPriorityFilter()"
+            (ngModelChange)="onPriorityFilterChange($event)"
+          ></p-select>
+        </div>
+      </div>
+    </p-card>
 
-            <div class="field-item">
-              <label for="priority">Prioridad</label>
-              <p-select inputId="priority" [options]="priorities" formControlName="priority"></p-select>
-            </div>
+    <p-card header="Tablero de Tickets">
+      <div class="kanban-grid" aria-label="Tablero Kanban">
+        @for (column of groupedByStatus(); track column.status) {
+          <section class="kanban-column" (dragover)="$event.preventDefault()" (drop)="onDropStatus(column.status)">
+            <header class="kanban-header">
+              <h3>{{ column.status }}</h3>
+              <p-tag [value]="column.tickets.length.toString()" severity="secondary"></p-tag>
+            </header>
 
-            <div class="field-item">
-              <label for="status">Estado</label>
-              <p-select inputId="status" [options]="statuses" formControlName="status"></p-select>
-            </div>
-
-            <div class="field-item field-item--full">
-              <label for="description">Descripción</label>
-              <textarea id="description" pTextarea rows="3" formControlName="description"></textarea>
-              @if (ticketsForm.controls.description.touched && ticketsForm.controls.description.hasError('required')) {
-                <p-message severity="error" text="La descripción es obligatoria."></p-message>
-              }
-              @if (ticketsForm.controls.description.touched && ticketsForm.controls.description.hasError('minlength')) {
-                <p-message severity="error" text="Minimo 5 caracteres en la descripción."></p-message>
-              }
-            </div>
-          </div>
-
-          <div class="tickets-actions">
-            @if (canSubmitCurrentAction()) {
-              <p-button
-                type="submit"
-                [label]="submitButtonLabel()"
-              ></p-button>
+            @if (column.tickets.length === 0) {
+              <p-message severity="info" text="Sin tickets en esta columna."></p-message>
             }
-            @if (canEditTickets() || canEditTicketState()) {
-              <p-button
-              type="button"
-              severity="secondary"
-              label="Cancelar"
-              [disabled]="!isEditing()"
-              (onClick)="onCancelEdit()"
-              ></p-button>
-            }
-          </div>
-        </form>
-      } @else {
-        <p-message severity="info" text="Modo solo lectura: puedes consultar la tabla, pero no crear o editar tickets."></p-message>
-      }
 
+            @for (ticket of column.tickets; track ticket.id) {
+              <article
+                class="kanban-ticket"
+                draggable="true"
+                (dragstart)="onStartDrag(ticket.id)"
+                (dragend)="onEndDrag()"
+              >
+                <header class="kanban-ticket-header">
+                  <strong>{{ ticket.title }}</strong>
+                  <p-tag [value]="ticket.priority" [severity]="prioritySeverity(ticket.priority)"></p-tag>
+                </header>
+                <p class="kanban-ticket-desc">{{ ticket.description }}</p>
+                <p class="kanban-ticket-meta">Asignado: {{ ticket.assignedTo }}</p>
+                <p class="kanban-ticket-meta">Limite: {{ formatDate(ticket.dueDate) }}</p>
+                <div class="kanban-ticket-actions">
+                  <p-button
+                    size="small"
+                    label="Detalle"
+                    icon="pi pi-eye"
+                    severity="secondary"
+                    (onClick)="openDetailDialog(ticket.id)"
+                  ></p-button>
+                  <p-button
+                    *ifHasPermission="['ticket:edit_state']"
+                    size="small"
+                    label="Editar estado"
+                    icon="pi pi-refresh"
+                    severity="help"
+                    (onClick)="onEditStatus(ticket.id)"
+                  ></p-button>
+                </div>
+              </article>
+            }
+          </section>
+        }
+      </div>
+    </p-card>
+
+    <p-card class="tickets-crud-card" header="Lista de Tickets">
       <div class="tickets-list" aria-label="Tabla de tickets">
-        @if (tickets().length === 0) {
-          <p-message severity="info" text="No hay tickets registrados todavia."></p-message>
+        @if (filteredTickets().length === 0) {
+          <p-message severity="info" text="No hay tickets para los filtros seleccionados."></p-message>
         } @else {
-          <p-table [value]="tickets()" styleClass="p-datatable-sm">
+          <p-table [value]="filteredTickets()" styleClass="p-datatable-sm" [paginator]="true" [rows]="8">
             <ng-template pTemplate="header">
               <tr>
+                <th>ID</th>
                 <th>Titulo</th>
+                <th>Estado</th>
                 <th>Asignado</th>
                 <th>Prioridad</th>
-                <th>Estado</th>
-                <th>Descripción</th>
+                <th>Fecha limite</th>
                 <th>Acciones</th>
               </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-ticket>
               <tr>
+                <td>{{ ticket.id }}</td>
                 <td>{{ ticket.title }}</td>
+                <td>
+                  <p-tag [value]="ticket.status" [severity]="statusSeverity(ticket.status)"></p-tag>
+                </td>
                 <td>{{ ticket.assignedTo }}</td>
                 <td>
                   <p-tag [value]="ticket.priority" [severity]="prioritySeverity(ticket.priority)"></p-tag>
                 </td>
-                <td>
-                  <p-tag [value]="ticket.status" [severity]="statusSeverity(ticket.status)"></p-tag>
-                </td>
-                <td>{{ ticket.description }}</td>
+                <td>{{ formatDate(ticket.dueDate) }}</td>
                 <td>
                   <div class="table-actions">
+                    <p-button
+                      type="button"
+                      size="small"
+                      label="Ver"
+                      severity="secondary"
+                      (onClick)="openDetailDialog(ticket.id)"
+                    ></p-button>
                     <p-button
                       *ifHasPermission="['ticket:edit']"
                       type="button"
@@ -120,14 +198,6 @@
                       label="Editar"
                       severity="info"
                       (onClick)="onEdit(ticket.id)"
-                    ></p-button>
-                    <p-button
-                      *ifHasPermission="['ticket:edit_state']"
-                      type="button"
-                      size="small"
-                      label="Cambiar estado"
-                      severity="secondary"
-                      (onClick)="onEditStatus(ticket.id)"
                     ></p-button>
                     <p-button
                       *ifHasPermission="['ticket:delete']"
@@ -147,3 +217,107 @@
     </p-card>
   }
 </section>
+
+<p-dialog
+  [header]="quickDialogTitle()"
+  [modal]="true"
+  [visible]="showQuickCreateDialog()"
+  [style]="{ width: 'min(720px, 95vw)' }"
+  (visibleChange)="showQuickCreateDialog.set($event)"
+>
+  <form [formGroup]="ticketsForm" (ngSubmit)="onSubmitQuickCreate()" novalidate class="tickets-form">
+    <div class="tickets-form-grid">
+      <div class="field-item">
+        <label for="title">Titulo</label>
+        <input id="title" pInputText type="text" formControlName="title" />
+      </div>
+
+      <div class="field-item">
+        <label for="assignedTo">Asignado a</label>
+        <input id="assignedTo" pInputText type="text" formControlName="assignedTo" placeholder="Opcional" />
+      </div>
+
+      <div class="field-item">
+        <label for="priority">Prioridad</label>
+        <p-select inputId="priority" [options]="priorities" formControlName="priority"></p-select>
+      </div>
+
+      <div class="field-item">
+        <label for="status">Estado</label>
+        <p-select inputId="status" [options]="statuses" formControlName="status"></p-select>
+      </div>
+
+      <div class="field-item">
+        <label for="dueDate">Fecha limite</label>
+        <input id="dueDate" pInputText type="date" formControlName="dueDate" />
+      </div>
+
+      <div class="field-item field-item--full">
+        <label for="description">Descripcion</label>
+        <textarea id="description" pTextarea rows="3" formControlName="description"></textarea>
+      </div>
+    </div>
+
+    <div class="tickets-actions">
+      <p-button type="submit" [label]="submitButtonLabel()"></p-button>
+      <p-button type="button" severity="secondary" label="Cerrar" (onClick)="closeQuickCreate()"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog
+  header="Detalle del Ticket"
+  [modal]="true"
+  [visible]="showDetailDialog()"
+  [style]="{ width: 'min(780px, 96vw)' }"
+  (visibleChange)="showDetailDialog.set($event)"
+>
+  @if (selectedTicket(); as ticket) {
+    <section class="ticket-detail">
+      <div class="ticket-detail-grid">
+        <article>
+          <h4>{{ ticket.title }}</h4>
+          <p>{{ ticket.description }}</p>
+          <p><strong>Estado:</strong> {{ ticket.status }}</p>
+          <p><strong>Prioridad:</strong> {{ ticket.priority }}</p>
+          <p><strong>Asignado:</strong> {{ ticket.assignedTo }}</p>
+          <p><strong>Creacion:</strong> {{ formatDate(ticket.createdAt) }}</p>
+          <p><strong>Fecha limite:</strong> {{ formatDate(ticket.dueDate) }}</p>
+        </article>
+
+        <article>
+          <h4>Comentarios / Actividad</h4>
+          <form [formGroup]="commentForm" (ngSubmit)="addComment()" class="comment-form">
+            <textarea pTextarea rows="3" formControlName="message" placeholder="Agregar comentario"></textarea>
+            <div class="comment-actions">
+              <p-button type="submit" label="Agregar comentario" icon="pi pi-comment"></p-button>
+            </div>
+          </form>
+
+          @if (ticket.comments.length === 0) {
+            <p-message severity="info" text="Aun no hay comentarios."></p-message>
+          } @else {
+            <ul class="comments-list">
+              @for (comment of ticket.comments; track comment.id) {
+                <li>
+                  <strong>{{ comment.author }}</strong>
+                  <p>{{ comment.message }}</p>
+                  <small>{{ formatDate(comment.createdAt) }}</small>
+                </li>
+              }
+            </ul>
+          }
+        </article>
+      </div>
+
+      <article class="ticket-history">
+        <h4>Historial de cambios</h4>
+        <p-timeline [value]="ticket.history" layout="vertical">
+          <ng-template pTemplate="content" let-entry>
+            {{ historyLabel(entry) }}
+          </ng-template>
+        </p-timeline>
+      </article>
+    </section>
+  }
+</p-dialog>

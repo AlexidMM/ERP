@@ -1,5 +1,5 @@
 .tickets {
-  max-width: 860px;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
   gap: 1rem;
@@ -28,8 +28,13 @@
   border-radius: 0.75rem;
   display: grid;
   place-items: center;
+  gap: 0.65rem;
   background: #111827;
   color: #f8fafc;
+}
+
+.display-box--actions {
+  align-content: center;
 }
 
 .display-box span {
@@ -59,6 +64,19 @@
   gap: 1rem;
 }
 
+.filters-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.quick-modes {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
 .tickets-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -81,7 +99,6 @@
 }
 
 .tickets-list {
-  margin-top: 1rem;
   display: grid;
   gap: 0.75rem;
 }
@@ -97,9 +114,117 @@
   flex-wrap: wrap;
 }
 
+.kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 0.8rem;
+  overflow-x: auto;
+}
+
+.kanban-column {
+  min-height: 360px;
+  padding: 0.75rem;
+  border: 1px dashed var(--p-content-border-color);
+  border-radius: 0.75rem;
+  background: var(--p-surface-100);
+  color: #111827;
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+}
+
+.kanban-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kanban-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.kanban-ticket {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.65rem;
+  background: var(--p-surface-0);
+  padding: 0.7rem;
+  display: grid;
+  gap: 0.45rem;
+  cursor: grab;
+}
+
+.kanban-ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kanban-ticket-desc,
+.kanban-ticket-meta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.kanban-ticket-meta {
+  color: var(--p-text-muted-color);
+}
+
+.kanban-ticket-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ticket-detail {
+  display: grid;
+  gap: 1rem;
+}
+
+.ticket-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.comment-form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comments-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.comments-list p {
+  margin: 0.25rem 0;
+}
+
+.ticket-history h4 {
+  margin: 0 0 0.75rem;
+}
+
 @media (max-width: 768px) {
   .tickets-grid,
+  .filters-grid,
+  .ticket-detail-grid,
   .tickets-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kanban-grid {
     grid-template-columns: 1fr;
   }
 }

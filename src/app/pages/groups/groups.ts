@@ -30,9 +30,19 @@ export class GroupsComponent {
   private readonly erpStore = inject(ErpStoreService);
   private readonly permissionsService = inject(PermissionsService);
 
-  readonly groups = computed(() => this.erpStore.groups());
+  readonly groups = computed(() => {
+    const tickets = this.erpStore.tickets();
+
+    return this.erpStore.groups().map((group) => ({
+      ...group,
+      integrantes: group.members.length,
+      tickets: tickets.filter((ticket) => ticket.groupId === group.id).length
+    }));
+  });
   readonly totalGroups = computed(() => this.groups().length);
   readonly editingGroupId = signal<string | null>(null);
+  readonly groupMembers = signal<string[]>([]);
+  readonly newMember = signal('');
   readonly feedback = signal<{ severity: 'success' | 'error' | 'warn'; text: string } | null>(null);
 
   readonly groupsForm = new FormGroup({
@@ -48,11 +58,11 @@ export class GroupsComponent {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(80)]
     }),
-    integrantes: new FormControl('', {
+    integrantes: new FormControl('0', {
       nonNullable: true,
       validators: [Validators.required, Validators.pattern(/^\d+$/)]
     }),
-    tickets: new FormControl('', {
+    tickets: new FormControl('0', {
       nonNullable: true,
       validators: [Validators.required, Validators.pattern(/^\d+$/)]
     }),
@@ -106,16 +116,21 @@ export class GroupsComponent {
     }
 
     const formValue = this.groupsForm.getRawValue();
+    const editId = this.editingGroupId();
+    const ticketCount = editId
+      ? this.erpStore.tickets().filter((ticket) => ticket.groupId === editId).length
+      : 0;
+
     const groupPayload = {
       nivel: formValue.nivel,
       autor: formValue.autor,
       nombre: formValue.nombre,
-      integrantes: Number(formValue.integrantes),
-      tickets: Number(formValue.tickets),
-      descripcion: formValue.descripcion
+      integrantes: this.groupMembers().length,
+      tickets: ticketCount,
+      descripcion: formValue.descripcion,
+      members: this.groupMembers()
     };
 
-    const editId = this.editingGroupId();
     this.erpStore.upsertGroup(groupPayload, editId ?? undefined);
 
     this.feedback.set({
@@ -145,10 +160,11 @@ export class GroupsComponent {
       nivel: targetGroup.nivel,
       autor: targetGroup.autor,
       nombre: targetGroup.nombre,
-      integrantes: String(targetGroup.integrantes),
+      integrantes: String(targetGroup.members.length),
       tickets: String(targetGroup.tickets),
       descripcion: targetGroup.descripcion
     });
+    this.groupMembers.set([...targetGroup.members]);
 
     this.feedback.set({
       severity: 'warn',
@@ -185,6 +201,41 @@ export class GroupsComponent {
     });
   }
 
+  onMemberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.newMember.set(input.value);
+  }
+
+  addMember(): void {
+    const candidate = this.newMember().replace(/\s+/g, ' ').trim();
+    if (!candidate) {
+      return;
+    }
+
+    const normalized = candidate.toLowerCase();
+    const exists = this.groupMembers().some((member) => member.toLowerCase() === normalized);
+    if (exists) {
+      this.feedback.set({
+        severity: 'warn',
+        text: 'Ese usuario ya forma parte del grupo.'
+      });
+      return;
+    }
+
+    this.groupMembers.set([...this.groupMembers(), candidate]);
+    this.groupsForm.controls.integrantes.setValue(String(this.groupMembers().length), {
+      emitEvent: false
+    });
+    this.newMember.set('');
+  }
+
+  removeMember(member: string): void {
+    this.groupMembers.set(this.groupMembers().filter((currentMember) => currentMember !== member));
+    this.groupsForm.controls.integrantes.setValue(String(this.groupMembers().length), {
+      emitEvent: false
+    });
+  }
+
   onDigitsInput(field: 'integrantes' | 'tickets', event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     const normalizedValue = inputElement.value.replace(/\D/g, '');
@@ -207,12 +258,14 @@ export class GroupsComponent {
 
   private resetForm(): void {
     this.editingGroupId.set(null);
+    this.groupMembers.set([]);
+    this.newMember.set('');
     this.groupsForm.reset({
       nivel: '',
       autor: '',
       nombre: '',
-      integrantes: '',
-      tickets: '',
+      integrantes: '0',
+      tickets: '0',
       descripcion: ''
     });
     this.groupsForm.markAsUntouched();

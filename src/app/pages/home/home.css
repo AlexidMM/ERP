@@ -1,53 +1,264 @@
 .home {
-  max-width: 920px;
+  max-width: 1240px;
   margin: 0 auto;
+  display: grid;
+  gap: 1rem;
 }
 
-:host ::ng-deep .p-card {
-  background: #ffffff;
-  color: #111827;
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.groups-panel,
+.dashboard-panel {
   border: 1px solid var(--p-content-border-color);
-  border-radius: 0.9rem;
-}
-
-:host ::ng-deep .p-card .p-card-title,
-:host ::ng-deep .p-card .p-card-content,
-:host ::ng-deep .p-card .p-card-body {
-  color: #111827;
 }
 
 .description {
-  margin-top: 0;
-  color: #111827;
+  margin: 0 0 0.75rem;
+  color: var(--p-text-muted-color);
 }
 
-.summary-grid {
+.groups-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 0.55rem;
 }
 
-.summary-item {
+.group-item {
+  width: 100%;
   border: 1px solid #bfdbfe;
-  border-radius: 0.75rem;
-  padding: 0.9rem;
+  border-radius: 0.65rem;
+  background: #f8fbff;
+  padding: 0.7rem;
+  text-align: left;
+  display: grid;
+  gap: 0.2rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.group-item:hover {
+  border-color: #3b82f6;
   background: #eff6ff;
 }
 
-.summary-item h3 {
-  margin: 0;
-  font-size: 1rem;
-  color: #1d4ed8;
+.group-item--active {
+  border-color: #16a34a;
+  background: #f0fdf4;
 }
 
-.summary-item p {
-  margin: 0.5rem 0 0;
+.group-name {
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.group-info {
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.dashboard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.dashboard-head h3 {
+  margin: 0;
+  color: #1e3a8a;
+}
+
+.dashboard-head p {
+  margin: 0.35rem 0 0;
+  color: #334155;
+}
+
+.actions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+  align-items: end;
+}
+
+.filter-item {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.filter-item label {
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.kanban-preview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.kanban-mini-column {
+  border: 1px dashed var(--p-content-border-color);
+  border-radius: 0.65rem;
+  background: var(--p-surface-50);
+  padding: 0.65rem;
+}
+
+.kanban-mini-column header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kanban-mini-column h4 {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.kanban-mini-column ul {
+  margin: 0.6rem 0 0;
+  padding-left: 1rem;
+}
+
+.kanban-empty {
+  margin: 0.6rem 0 0;
+  color: #64748b;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.status-card {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.65rem;
+  background: var(--p-surface-100);
+  padding: 0.75rem;
+}
+
+.status-card h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--p-text-muted-color);
+}
+
+.status-card p {
+  margin: 0.3rem 0 0;
+  font-size: 1.4rem;
+  font-weight: 700;
   color: #0f172a;
 }
 
-@media (max-width: 768px) {
-  .summary-grid {
+.charts {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.chart-item {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.65rem;
+  background: var(--p-surface-100);
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.chart-item header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-item h4,
+.chart-item p {
+  margin: 0;
+}
+
+.bar-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #dbeafe;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.create-ticket-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.create-ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field-item {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field-item--full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 992px) {
+  .dashboard-layout {
     grid-template-columns: 1fr;
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .kanban-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-row,
+  .create-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kanban-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-head {
+    flex-direction: column;
   }
 }

@@ -5,6 +5,7 @@ import { MessageModule } from 'primeng/message';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { Router } from '@angular/router';
 import { PermissionsService } from '../../services/permissions.service';
+import { ErpStoreService } from '../../shared/erp-store.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -16,6 +17,7 @@ import { PermissionsService } from '../../services/permissions.service';
 export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly permissionsService = inject(PermissionsService);
+  private readonly erpStore = inject(ErpStoreService);
 
   readonly projectVersion = 'ERP version 4';
 
@@ -38,7 +40,7 @@ export class SidebarComponent {
       });
     }
 
-    if (this.permissionsService.hasPermission('group:view')) {
+    if (this.permissionsService.hasAnyPermission(['group:add', 'group:edit', 'group:delete'])) {
       items.push({
         label: 'Groups',
         icon: 'pi pi-th-large',
@@ -75,6 +77,8 @@ export class SidebarComponent {
 
   onLogout(): void {
     this.permissionsService.clearPermissions();
+    this.erpStore.clearSessionUser();
+    this.erpStore.clearSelectedGroup();
     void this.router.navigateByUrl('/auth/login');
   }
 }

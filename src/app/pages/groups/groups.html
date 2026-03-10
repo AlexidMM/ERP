@@ -56,7 +56,7 @@
                 type="text"
                 inputmode="numeric"
                 formControlName="integrantes"
-                (input)="onDigitsInput('integrantes', $event)"
+                readonly
               />
               @if (groupsForm.controls.integrantes.touched && groupsForm.controls.integrantes.hasError('required')) {
                 <p-message severity="error" text="Integrantes es obligatorio."></p-message>
@@ -74,13 +74,49 @@
                 type="text"
                 inputmode="numeric"
                 formControlName="tickets"
-                (input)="onDigitsInput('tickets', $event)"
+                readonly
               />
+              <small>Se calcula automaticamente cuando se asignan tickets al grupo.</small>
               @if (groupsForm.controls.tickets.touched && groupsForm.controls.tickets.hasError('required')) {
                 <p-message severity="error" text="Tickets es obligatorio."></p-message>
               }
               @if (groupsForm.controls.tickets.touched && groupsForm.controls.tickets.hasError('pattern')) {
                 <p-message severity="error" text="Solo números para tickets."></p-message>
+              }
+            </div>
+
+            <div class="field-item field-item--full">
+              <label for="memberInput">Usuarios del grupo</label>
+              <div class="member-actions">
+                <input
+                  id="memberInput"
+                  pInputText
+                  type="text"
+                  placeholder="Agregar usuario por nombre o email"
+                  [value]="newMember()"
+                  (input)="onMemberInput($event)"
+                />
+                <p-button type="button" icon="pi pi-user-plus" label="Agregar" (onClick)="addMember()"></p-button>
+              </div>
+
+              @if (groupMembers().length === 0) {
+                <p-message severity="info" text="Aun no hay integrantes en este grupo."></p-message>
+              } @else {
+                <div class="members-list">
+                  @for (member of groupMembers(); track member) {
+                    <span class="member-chip">
+                      {{ member }}
+                      <button
+                        pButton
+                        type="button"
+                        text
+                        severity="danger"
+                        icon="pi pi-times"
+                        (click)="removeMember(member)"
+                      ></button>
+                    </span>
+                  }
+                </div>
               }
             </div>
 
@@ -130,6 +166,7 @@
                 <th>Nombre</th>
                 <th>Integrantes</th>
                 <th>Tickets</th>
+                <th>Usuarios</th>
                 <th>Descripción</th>
                 <th>Acciones</th>
               </tr>
@@ -142,6 +179,13 @@
                 <td>{{ group.nombre }}</td>
                 <td>{{ group.integrantes }}</td>
                 <td>{{ group.tickets }}</td>
+                <td>
+                  @if (group.members.length === 0) {
+                    <span class="empty-members">Sin usuarios</span>
+                  } @else {
+                    <div class="members-inline">{{ group.members.join(', ') }}</div>
+                  }
+                </td>
                 <td>{{ group.descripcion }}</td>
                 <td>
                   <div class="table-actions">
