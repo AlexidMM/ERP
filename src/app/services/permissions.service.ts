@@ -1,8 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type UserRole = 'common' | 'admin';
-
-const COMMON_USER_PERMISSIONS = Object.freeze([
+const BASIC_PERMISSIONS = Object.freeze([
   'group:view',
   'ticket:view',
   'ticket:edit_state',
@@ -10,7 +8,7 @@ const COMMON_USER_PERMISSIONS = Object.freeze([
   'user:edit'
 ]);
 
-const ADMIN_USER_PERMISSIONS = Object.freeze([
+const FULL_PERMISSIONS = Object.freeze([
   'group:view',
   'group:edit',
   'group:add',
@@ -54,16 +52,16 @@ export class PermissionsService {
     return perms.some((permission) => this.hasPermission(permission));
   }
 
-  getPermissionsByRole(role: UserRole): string[] {
-    if (role === 'admin') {
-      return [...ADMIN_USER_PERMISSIONS];
-    }
+  getBasicPermissions(): string[] {
+    return [...BASIC_PERMISSIONS];
+  }
 
-    return [...COMMON_USER_PERMISSIONS];
+  getFullPermissions(): string[] {
+    return [...FULL_PERMISSIONS];
   }
 
   getDemoPermissions(): string[] {
-    return this.getPermissionsByRole('admin');
+    return this.getFullPermissions();
   }
 
   private normalizePermissions(perms: string[]): string[] {

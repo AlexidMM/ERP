@@ -69,6 +69,9 @@ export class GroupsComponent {
   readonly canSaveGroups = computed(() =>
     this.permissionsService.hasAnyPermission(['group:add', 'group:edit'])
   );
+  readonly canManageGroups = computed(() =>
+    this.permissionsService.hasAnyPermission(['group:add', 'group:edit'])
+  );
   readonly canEditGroups = computed(() =>
     this.permissionsService.hasPermission('group:edit')
   );

@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
-import { PermissionsService, UserRole } from '../../../services/permissions.service';
+import { PermissionsService } from '../../../services/permissions.service';
 
 @Component({
   selector: 'app-login',
@@ -18,16 +18,16 @@ export class LoginComponent {
   private readonly router = inject(Router);
   private readonly permissionsService = inject(PermissionsService);
 
-  private readonly hardcodedCredentials: Array<{ email: string; password: string; role: UserRole }> = [
+  private readonly hardcodedCredentials: Array<{ email: string; password: string; permissions: string[] }> = [
     {
       email: 'admin@erp.com',
       password: 'Admin@12345',
-      role: 'admin'
+      permissions: this.permissionsService.getFullPermissions()
     },
     {
       email: 'user@erp.com',
       password: 'User@12345',
-      role: 'common'
+      permissions: this.permissionsService.getBasicPermissions()
     }
   ];
 
@@ -71,10 +71,10 @@ export class LoginComponent {
 
     this.feedback.set({
       severity: 'success',
-      text: `Inicio de sesión correcto. Perfil: ${currentUser.role}.`
+      text: `Inicio de sesión correcto. Se cargaron ${currentUser.permissions.length} permisos.`
     });
 
-    this.permissionsService.setPermissions(this.permissionsService.getPermissionsByRole(currentUser.role));
+    this.permissionsService.setPermissions(currentUser.permissions);
 
     void this.router.navigateByUrl('/home');
   }

@@ -11,20 +11,47 @@
   gap: 1rem;
 }
 
+.tickets-grid :global(.p-card) {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #1e3a8a;
+}
+
+.tickets-grid :global(.p-card-title) {
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
 .display-box {
   min-height: 120px;
-  border: 2px solid var(--p-primary-color);
+  border: 2px solid #38bdf8;
   border-radius: 0.75rem;
   display: grid;
   place-items: center;
-  background: var(--p-surface-50);
-  color: #111827;
+  background: #111827;
+  color: #f8fafc;
 }
 
 .display-box span {
   font-size: 2.1rem;
   font-weight: 700;
   line-height: 1;
+  color: #f8fafc;
+}
+
+.display-box :global(.p-tag) {
+  font-weight: 700;
+  border: none;
+}
+
+.display-box :global(.p-tag-info) {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.display-box :global(.p-tag-warn) {
+  background: #b45309;
+  color: #ffffff;
 }
 
 .tickets-form {

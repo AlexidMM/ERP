@@ -84,6 +84,9 @@ export class UsersComponent {
   readonly canViewUsers = computed(() => this.permissionsService.hasPermission('user:view'));
   readonly canAddUsers = computed(() => this.permissionsService.hasPermission('user:add'));
   readonly canEditUsers = computed(() => this.permissionsService.hasPermission('user:edit'));
+  readonly canManageUsers = computed(() =>
+    this.permissionsService.hasAnyPermission(['user:add', 'user:edit'])
+  );
   readonly canSaveUsers = computed(() => {
     if (this.profile()) {
       return this.canEditUsers();

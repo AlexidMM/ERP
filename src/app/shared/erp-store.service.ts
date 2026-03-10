@@ -27,7 +27,7 @@ export interface TicketRecord {
   assignedTo: string;
   priority: 'Alta' | 'Media' | 'Baja';
   status: 'Abierto' | 'En proceso' | 'Cerrado';
-  notes: string;
+  description: string;
 }
 
 @Injectable({ providedIn: 'root' })

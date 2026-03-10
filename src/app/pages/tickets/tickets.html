@@ -21,64 +21,68 @@
         <p-message [severity]="status.severity" [text]="status.text"></p-message>
       }
 
-      <form [formGroup]="ticketsForm" (ngSubmit)="onSubmit()" novalidate class="tickets-form">
-        <div class="tickets-form-grid">
-          <div class="field-item">
-            <label for="title">Titulo</label>
-            <input id="title" pInputText type="text" formControlName="title" />
-            @if (ticketsForm.controls.title.touched && ticketsForm.controls.title.hasError('required')) {
-              <p-message severity="error" text="El titulo es obligatorio."></p-message>
+      @if (canManageTickets()) {
+        <form [formGroup]="ticketsForm" (ngSubmit)="onSubmit()" novalidate class="tickets-form">
+          <div class="tickets-form-grid">
+            <div class="field-item">
+              <label for="title">Titulo</label>
+              <input id="title" pInputText type="text" formControlName="title" />
+              @if (ticketsForm.controls.title.touched && ticketsForm.controls.title.hasError('required')) {
+                <p-message severity="error" text="El titulo es obligatorio."></p-message>
+              }
+            </div>
+
+            <div class="field-item">
+              <label for="assignedTo">Asignado a</label>
+              <input id="assignedTo" pInputText type="text" formControlName="assignedTo" />
+              @if (ticketsForm.controls.assignedTo.touched && ticketsForm.controls.assignedTo.hasError('required')) {
+                <p-message severity="error" text="El responsable es obligatorio."></p-message>
+              }
+            </div>
+
+            <div class="field-item">
+              <label for="priority">Prioridad</label>
+              <p-select inputId="priority" [options]="priorities" formControlName="priority"></p-select>
+            </div>
+
+            <div class="field-item">
+              <label for="status">Estado</label>
+              <p-select inputId="status" [options]="statuses" formControlName="status"></p-select>
+            </div>
+
+            <div class="field-item field-item--full">
+              <label for="description">Descripción</label>
+              <textarea id="description" pTextarea rows="3" formControlName="description"></textarea>
+              @if (ticketsForm.controls.description.touched && ticketsForm.controls.description.hasError('required')) {
+                <p-message severity="error" text="La descripción es obligatoria."></p-message>
+              }
+              @if (ticketsForm.controls.description.touched && ticketsForm.controls.description.hasError('minlength')) {
+                <p-message severity="error" text="Minimo 5 caracteres en la descripción."></p-message>
+              }
+            </div>
+          </div>
+
+          <div class="tickets-actions">
+            @if (canSubmitCurrentAction()) {
+              <p-button
+                type="submit"
+                [label]="submitButtonLabel()"
+              ></p-button>
+            }
+            @if (canEditTickets() || canEditTicketState()) {
+              <p-button
+              type="button"
+              severity="secondary"
+              label="Cancelar"
+              [disabled]="!isEditing()"
+              (onClick)="onCancelEdit()"
+              ></p-button>
             }
           </div>
-
-          <div class="field-item">
-            <label for="assignedTo">Asignado a</label>
-            <input id="assignedTo" pInputText type="text" formControlName="assignedTo" />
-            @if (ticketsForm.controls.assignedTo.touched && ticketsForm.controls.assignedTo.hasError('required')) {
-              <p-message severity="error" text="El responsable es obligatorio."></p-message>
-            }
-          </div>
-
-          <div class="field-item">
-            <label for="priority">Prioridad</label>
-            <p-select inputId="priority" [options]="priorities" formControlName="priority"></p-select>
-          </div>
-
-          <div class="field-item">
-            <label for="status">Estado</label>
-            <p-select inputId="status" [options]="statuses" formControlName="status"></p-select>
-          </div>
-
-          <div class="field-item field-item--full">
-            <label for="notes">Notas</label>
-            <textarea id="notes" pTextarea rows="3" formControlName="notes"></textarea>
-            @if (ticketsForm.controls.notes.touched && ticketsForm.controls.notes.hasError('required')) {
-              <p-message severity="error" text="Las notas son obligatorias."></p-message>
-            }
-            @if (ticketsForm.controls.notes.touched && ticketsForm.controls.notes.hasError('minlength')) {
-              <p-message severity="error" text="Minimo 5 caracteres en notas."></p-message>
-            }
-          </div>
-        </div>
-
-        <div class="tickets-actions">
-          @if (canSubmitCurrentAction()) {
-            <p-button
-              type="submit"
-              [label]="submitButtonLabel()"
-            ></p-button>
-          }
-          @if (canEditTickets() || canEditTicketState()) {
-            <p-button
-            type="button"
-            severity="secondary"
-            label="Cancelar"
-            [disabled]="!isEditing()"
-            (onClick)="onCancelEdit()"
-            ></p-button>
-          }
-        </div>
-      </form>
+        </form>
+      } @else {
+        <p-message severity="info" text="Modo solo lectura: puedes consultar la tabla, pero no crear o editar tickets."></p-message>
+      }
 
       <div class="tickets-list" aria-label="Tabla de tickets">
         @if (tickets().length === 0) {
@@ -91,7 +95,7 @@
                 <th>Asignado</th>
                 <th>Prioridad</th>
                 <th>Estado</th>
-                <th>Notas</th>
+                <th>Descripción</th>
                 <th>Acciones</th>
               </tr>
             </ng-template>
@@ -106,7 +110,7 @@
                 <td>
                   <p-tag [value]="ticket.status" [severity]="statusSeverity(ticket.status)"></p-tag>
                 </td>
-                <td>{{ ticket.notes }}</td>
+                <td>{{ ticket.description }}</td>
                 <td>
                   <div class="table-actions">
                     <p-button

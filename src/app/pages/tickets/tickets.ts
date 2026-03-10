@@ -47,6 +47,9 @@ export class TicketsComponent {
   readonly canEditTicketState = computed(() => this.permissionsService.hasPermission('ticket:edit_state'));
   readonly canDeleteTickets = computed(() => this.permissionsService.hasPermission('ticket:delete'));
   readonly canAddTickets = computed(() => this.permissionsService.hasPermission('ticket:add'));
+  readonly canManageTickets = computed(() =>
+    this.permissionsService.hasAnyPermission(['ticket:add', 'ticket:edit', 'ticket:edit_state'])
+  );
   readonly canSubmitCurrentAction = computed(() => {
     if (!this.isEditing()) {
       return this.canAddTickets();
@@ -89,7 +92,7 @@ export class TicketsComponent {
       nonNullable: true,
       validators: [Validators.required]
     }),
-    notes: new FormControl('', {
+    description: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(5), Validators.maxLength(300)]
     })
@@ -130,7 +133,7 @@ export class TicketsComponent {
       assignedTo: formValue.assignedTo,
       priority: formValue.priority,
       status: formValue.status,
-      notes: formValue.notes
+      description: formValue.description
     };
 
     const editId = this.editingTicketId();
@@ -151,7 +154,7 @@ export class TicketsComponent {
         assignedTo: originalTicket.assignedTo,
         priority: originalTicket.priority,
         status: formValue.status,
-        notes: originalTicket.notes
+        description: originalTicket.description
       };
     }
 
@@ -186,7 +189,7 @@ export class TicketsComponent {
       assignedTo: ticket.assignedTo,
       priority: ticket.priority,
       status: ticket.status,
-      notes: ticket.notes
+      description: ticket.description
     });
 
     this.configureControlsByEditMode();
@@ -218,7 +221,7 @@ export class TicketsComponent {
       assignedTo: ticket.assignedTo,
       priority: ticket.priority,
       status: ticket.status,
-      notes: ticket.notes
+      description: ticket.description
     });
 
     this.configureControlsByEditMode();
@@ -283,7 +286,7 @@ export class TicketsComponent {
   }
 
   private normalizeTextFields(): void {
-    const fields = ['title', 'assignedTo', 'notes'] as const;
+    const fields = ['title', 'assignedTo', 'description'] as const;
 
     for (const field of fields) {
       const control = this.ticketsForm.controls[field];
@@ -299,7 +302,7 @@ export class TicketsComponent {
       assignedTo: '',
       priority: 'Media',
       status: 'Abierto',
-      notes: ''
+      description: ''
     });
     this.configureControlsByEditMode();
     this.ticketsForm.markAsUntouched();
@@ -307,7 +310,7 @@ export class TicketsComponent {
 
   private configureControlsByEditMode(): void {
     const disableFullEditFields = this.isStateOnlyEditing();
-    const fields = ['title', 'assignedTo', 'priority', 'notes'] as const;
+    const fields = ['title', 'assignedTo', 'priority', 'description'] as const;
 
     for (const field of fields) {
       const control = this.ticketsForm.controls[field];
