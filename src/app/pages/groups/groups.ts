@@ -74,7 +74,7 @@ export class GroupsComponent {
 
   readonly isEditing = computed(() => this.editingGroupId() !== null);
   readonly canViewGroups = computed(() =>
-    this.permissionsService.hasPermission('group:view')
+    this.permissionsService.hasAnyPermission(['group:add', 'group:edit', 'group:delete'])
   );
   readonly canSaveGroups = computed(() =>
     this.permissionsService.hasAnyPermission(['group:add', 'group:edit'])

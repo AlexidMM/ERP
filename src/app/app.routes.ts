@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { groupsCrudGuard } from './guards/groups-crud.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'landing' },
@@ -24,6 +25,7 @@ export const routes: Routes = [
       },
       {
         path: 'groups',
+        canActivate: [groupsCrudGuard],
         loadComponent: () => import('./pages/groups/groups').then((m) => m.GroupsComponent)
       },
       {

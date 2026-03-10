@@ -78,7 +78,13 @@ export class TicketsComponent {
       return this.canAddTickets();
     }
 
-    return this.canEditTickets() || this.canEditTicketState();
+    const editingId = this.editingTicketId();
+    const ticket = editingId ? this.tickets().find((item) => item.id === editingId) : null;
+    if (!ticket) {
+      return false;
+    }
+
+    return this.isStateOnlyEditing() ? this.canChangeStateTicket(ticket) : this.canEditFullTicket(ticket);
   });
   readonly submitButtonLabel = computed(() => {
     if (!this.isEditing()) {
@@ -189,21 +195,52 @@ export class TicketsComponent {
   });
 
   readonly isEditing = computed(() => this.editingTicketId() !== null);
+  readonly canCommentCurrentTicket = computed(() => {
+    const ticket = this.selectedTicket();
+    if (!ticket) {
+      return false;
+    }
+
+    return this.canCommentOnTicket(ticket);
+  });
 
   onSubmit(): void {
     const canAdd = this.permissionsService.hasPermission('ticket:add');
-    const canEdit = this.permissionsService.hasPermission('ticket:edit');
-    const canEditState = this.permissionsService.hasPermission('ticket:edit_state');
     const editing = this.isEditing();
 
-    if ((editing && !canEdit && !canEditState) || (!editing && !canAdd)) {
+    const editId = this.editingTicketId();
+    const originalTicket = editId ? this.tickets().find((item) => item.id === editId) : null;
+
+    if (!editing && !canAdd) {
       this.feedback.set({
         severity: 'error',
-        text: editing
-          ? 'No cuentas con permiso para editar tickets o cambiar su estado.'
-          : 'No cuentas con permiso para agregar tickets.'
+        text: 'No cuentas con permiso para agregar tickets.'
       });
       return;
+    }
+
+    if (editing && !originalTicket) {
+      this.feedback.set({
+        severity: 'error',
+        text: 'No se encontró el ticket seleccionado.'
+      });
+      return;
+    }
+
+    if (editing && originalTicket) {
+      const hasEditAccess = this.isStateOnlyEditing()
+        ? this.canChangeStateTicket(originalTicket)
+        : this.canEditFullTicket(originalTicket);
+
+      if (!hasEditAccess) {
+        this.feedback.set({
+          severity: 'error',
+          text: this.isStateOnlyEditing()
+            ? 'No puedes cambiar el estado de este ticket.'
+            : 'Solo el creador del ticket puede editar todos sus campos.'
+        });
+        return;
+      }
     }
 
     this.normalizeTextFields();
@@ -220,6 +257,7 @@ export class TicketsComponent {
     const formValue = this.ticketsForm.getRawValue();
     let payload: Omit<TicketRecord, 'id'> = {
       groupId: this.selectedGroupId(),
+      createdBy: this.currentUserKey() || 'sistema',
       title: formValue.title,
       assignedTo: formValue.assignedTo,
       priority: formValue.priority,
@@ -231,20 +269,10 @@ export class TicketsComponent {
       history: []
     };
 
-    const editId = this.editingTicketId();
-    const originalTicket = editId ? this.tickets().find((item) => item.id === editId) : null;
-
-    if (editing && !canEdit) {
-      if (!originalTicket) {
-        this.feedback.set({
-          severity: 'error',
-          text: 'No se encontró el ticket seleccionado.'
-        });
-        return;
-      }
-
+    if (editing && originalTicket && this.isStateOnlyEditing()) {
       payload = {
         groupId: originalTicket.groupId,
+        createdBy: originalTicket.createdBy,
         title: originalTicket.title,
         assignedTo: originalTicket.assignedTo,
         priority: originalTicket.priority,
@@ -255,11 +283,12 @@ export class TicketsComponent {
         comments: originalTicket.comments,
         history: originalTicket.history
       };
-    } else if (editing && canEdit) {
-      payload.groupId = originalTicket?.groupId ?? this.selectedGroupId();
-      payload.createdAt = originalTicket?.createdAt ?? new Date().toISOString();
-      payload.comments = originalTicket?.comments ?? [];
-      payload.history = originalTicket?.history ?? [];
+    } else if (editing && originalTicket) {
+      payload.groupId = originalTicket.groupId;
+      payload.createdBy = originalTicket.createdBy;
+      payload.createdAt = originalTicket.createdAt;
+      payload.comments = originalTicket.comments;
+      payload.history = originalTicket.history;
     }
 
     this.erpStore.upsertTicket(payload, editId ?? undefined);
@@ -273,16 +302,16 @@ export class TicketsComponent {
   }
 
   onEdit(ticketId: string): void {
-    if (!this.permissionsService.hasPermission('ticket:edit')) {
-      this.feedback.set({
-        severity: 'error',
-        text: 'No cuentas con permiso para editar tickets.'
-      });
+    const ticket = this.tickets().find((item) => item.id === ticketId);
+    if (!ticket) {
       return;
     }
 
-    const ticket = this.tickets().find((item) => item.id === ticketId);
-    if (!ticket) {
+    if (!this.canEditFullTicket(ticket)) {
+      this.feedback.set({
+        severity: 'error',
+        text: 'Solo el creador del ticket puede editar todos sus campos.'
+      });
       return;
     }
 
@@ -308,16 +337,16 @@ export class TicketsComponent {
   }
 
   onEditStatus(ticketId: string): void {
-    if (!this.permissionsService.hasPermission('ticket:edit_state')) {
-      this.feedback.set({
-        severity: 'error',
-        text: 'No cuentas con permiso para cambiar el estado de tickets.'
-      });
+    const ticket = this.tickets().find((item) => item.id === ticketId);
+    if (!ticket) {
       return;
     }
 
-    const ticket = this.tickets().find((item) => item.id === ticketId);
-    if (!ticket) {
+    if (!this.canChangeStateTicket(ticket)) {
+      this.feedback.set({
+        severity: 'error',
+        text: 'Solo el creador o el usuario asignado pueden cambiar el estado.'
+      });
       return;
     }
 
@@ -417,6 +446,11 @@ export class TicketsComponent {
   }
 
   onStartDrag(ticketId: string): void {
+    const ticket = this.tickets().find((item) => item.id === ticketId);
+    if (!ticket || !this.canChangeStateTicket(ticket)) {
+      return;
+    }
+
     this.draggedTicketId.set(ticketId);
   }
 
@@ -428,7 +462,12 @@ export class TicketsComponent {
     const ticketId = this.draggedTicketId();
     this.draggedTicketId.set(null);
 
-    if (!ticketId || !this.canEditTicketState()) {
+    if (!ticketId) {
+      return;
+    }
+
+    const ticket = this.tickets().find((item) => item.id === ticketId);
+    if (!ticket || !this.canChangeStateTicket(ticket)) {
       return;
     }
 
@@ -458,6 +497,14 @@ export class TicketsComponent {
       return;
     }
 
+    if (!this.canCommentOnTicket(ticket)) {
+      this.feedback.set({
+        severity: 'error',
+        text: 'Solo el creador o el usuario asignado pueden comentar este ticket.'
+      });
+      return;
+    }
+
     this.commentForm.markAllAsTouched();
     if (this.commentForm.invalid) {
       return;
@@ -483,6 +530,26 @@ export class TicketsComponent {
 
   onQuickModeChange(mode: 'all' | 'mine' | 'unassigned' | 'high'): void {
     this.quickMode.set(mode);
+  }
+
+  canChangeStateTicket(ticket: TicketRecord): boolean {
+    if (!this.permissionsService.hasPermission('ticket:edit_state')) {
+      return false;
+    }
+
+    return this.isCreator(ticket) || this.isAssigned(ticket);
+  }
+
+  canEditFullTicket(ticket: TicketRecord): boolean {
+    if (!this.permissionsService.hasPermission('ticket:edit')) {
+      return false;
+    }
+
+    return this.isCreator(ticket);
+  }
+
+  canCommentOnTicket(ticket: TicketRecord): boolean {
+    return this.isCreator(ticket) || this.isAssigned(ticket);
   }
 
   formatDate(value: string): string {
@@ -584,5 +651,24 @@ export class TicketsComponent {
     }
 
     return parsed.toISOString().split('T')[0];
+  }
+
+  private isCreator(ticket: TicketRecord): boolean {
+    const current = this.currentUserKey().trim().toLowerCase();
+    if (!current) {
+      return false;
+    }
+
+    return ticket.createdBy.trim().toLowerCase() === current;
+  }
+
+  private isAssigned(ticket: TicketRecord): boolean {
+    const current = this.currentUserKey().trim().toLowerCase();
+    if (!current) {
+      return false;
+    }
+
+    const assigned = ticket.assignedTo.trim().toLowerCase();
+    return assigned.length > 0 && assigned.includes(current);
   }
 }

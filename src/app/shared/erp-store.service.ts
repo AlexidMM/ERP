@@ -43,6 +43,7 @@ export interface TicketHistoryEntry {
 export interface TicketRecord {
   id: string;
   groupId: string;
+  createdBy: string;
   title: string;
   assignedTo: string;
   priority: 'Alta' | 'Media' | 'Baja';
@@ -446,6 +447,7 @@ export class ErpStoreService {
     return {
       id: ticket.id ?? this.generateId(),
       groupId: String(ticket.groupId ?? '').trim(),
+      createdBy: this.normalizeUserKey(String(ticket.createdBy ?? ticket.assignedTo ?? 'sistema')),
       title: String(ticket.title ?? '').trim(),
       assignedTo: String(ticket.assignedTo ?? '').trim(),
       priority: this.normalizePriority(ticket.priority),
@@ -496,6 +498,7 @@ export class ErpStoreService {
 
     return {
       groupId: ticket.groupId.trim(),
+      createdBy: this.normalizeUserKey(ticket.createdBy) || 'sistema',
       title: ticket.title.trim(),
       assignedTo: ticket.assignedTo.trim(),
       priority: this.normalizePriority(ticket.priority),

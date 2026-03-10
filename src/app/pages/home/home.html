@@ -16,8 +16,11 @@
         <div class="groups-list" aria-label="Lista vertical de grupos">
           @for (group of availableGroups(); track group.id) {
             <button
+              pButton
               type="button"
               class="group-item"
+              severity="secondary"
+              variant="text"
               [class.group-item--active]="selectedGroupId() === group.id"
               (click)="onSelectGroup(group.id)"
             >

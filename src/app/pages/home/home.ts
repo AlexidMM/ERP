@@ -235,6 +235,7 @@ export class HomeComponent {
     const formValue = this.createTicketForm.getRawValue();
     this.erpStore.upsertTicket({
       groupId: selectedGroup.id,
+      createdBy: this.currentUserKey() || 'sistema',
       title: formValue.title.trim(),
       assignedTo: formValue.assignedTo.trim(),
       priority: formValue.priority,

@@ -70,7 +70,9 @@ export class SidebarComponent {
     this.permissionsService.permissions();
     return this.permissionsService.hasAnyPermission([
       'user:view',
-      'group:view',
+      'group:add',
+      'group:edit',
+      'group:delete',
       'ticket:view'
     ]);
   });
