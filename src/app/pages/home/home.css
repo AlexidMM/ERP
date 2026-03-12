@@ -1,274 +1,391 @@
-.home {
-  max-width: 1240px;
+﻿.home {
+  max-width: 1320px;
   margin: 0 auto;
   display: grid;
   gap: 1rem;
 }
 
-.dashboard-layout {
+.dash-layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: 1rem;
   align-items: start;
 }
 
-.groups-panel,
-.dashboard-panel {
-  border: 1px solid var(--p-content-border-color);
+.groups-panel {
+  position: sticky;
+  top: 1rem;
 }
 
-.description {
+.groups-hint {
   margin: 0 0 0.75rem;
-  color: var(--p-text-muted-color);
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+/* PrimeNG card internals sometimes override projected content colors. */
+:host ::ng-deep .groups-panel .p-card-body .groups-hint {
+  color: #0f172a !important;
+  font-weight: 600;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.65rem;
 }
 
 .groups-list {
-  display: grid;
-  gap: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.group-item {
+.group-btn {
   width: 100%;
-  border: 1px solid #bfdbfe;
-  border-radius: 0.65rem;
-  background: #f8fbff;
-  padding: 0.7rem;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.7rem !important;
+  background: #f8fafc !important;
+  padding: 0.75rem !important;
   text-align: left;
-  display: grid;
+  display: flex !important;
+  flex-direction: column;
   gap: 0.2rem;
-  cursor: pointer;
+  justify-content: flex-start !important;
   transition: all 150ms ease;
 }
 
-.group-item:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+.group-btn:hover {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
 }
 
-.group-item--active {
-  border-color: #16a34a;
-  background: #f0fdf4;
+.group-btn--active {
+  border-color: #22c55e !important;
+  background: #f0fdf4 !important;
 }
 
-.group-name {
-  font-weight: 700;
-  color: #1e3a8a;
-}
-
-.group-info {
-  font-size: 0.85rem;
-  color: #334155;
-}
-
-.dashboard-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.8rem;
-  margin-bottom: 0.9rem;
-}
-
-.dashboard-head h3 {
-  margin: 0;
-  color: #1e3a8a;
-}
-
-.dashboard-head p {
-  margin: 0.35rem 0 0;
-  color: #334155;
-}
-
-.actions {
-  display: flex;
-  gap: 0.55rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.filter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 0.7rem;
-  margin-bottom: 0.9rem;
-  align-items: end;
-}
-
-.filter-item {
-  display: grid;
-  gap: 0.4rem;
-}
-
-.filter-item label {
-  font-size: 0.85rem;
-  color: #334155;
-}
-
-.kanban-preview {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.7rem;
-  margin-bottom: 1rem;
-}
-
-.kanban-mini-column {
-  border: 1px dashed var(--p-content-border-color);
-  border-radius: 0.65rem;
-  background: var(--p-surface-50);
-  padding: 0.65rem;
-}
-
-.kanban-mini-column header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.kanban-mini-column h4 {
-  margin: 0;
-  font-size: 0.92rem;
-  color: #1e293b;
-}
-
-.kanban-mini-column ul {
-  margin: 0.6rem 0 0;
-  padding-left: 1rem;
-}
-
-.kanban-mini-column ul li {
-  color: #334155;
-  font-size: 0.85rem;
-}
-
-.kanban-empty {
-  margin: 0.6rem 0 0;
-  color: #64748b;
-}
-
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.7rem;
-  margin-bottom: 1rem;
-}
-
-.status-card {
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 0.65rem;
-  background: var(--p-surface-100);
-  padding: 0.75rem;
-}
-
-.status-card h4 {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #475569;
-}
-
-.status-card p {
-  margin: 0.3rem 0 0;
-  font-size: 1.4rem;
+.group-btn-name {
   font-weight: 700;
   color: #0f172a;
+  font-size: 0.9rem;
 }
 
-.charts {
-  margin-top: 1rem;
+.group-btn-info {
+  color: #475569;
+  font-size: 0.8rem;
+}
+
+.dashboard-empty {
+  min-height: 320px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.8rem;
+  place-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.8rem;
+  background: #f8fafc;
 }
 
-.chart-item {
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 0.65rem;
-  background: var(--p-surface-100);
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.chart-item header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.chart-item h4 {
-  margin: 0;
-  font-size: 0.92rem;
-  color: #1e293b;
-}
-
-.chart-item p {
-  margin: 0;
-}
-
-:host ::ng-deep .chart-canvas canvas {
-  max-height: 220px !important;
-}
-
-.chart-empty {
-  color: #64748b;
-  font-size: 0.85rem;
+.empty-state {
   text-align: center;
-  padding: 1rem 0;
+  color: #334155;
+  padding: 1.5rem;
 }
 
-.create-ticket-form {
+.empty-icon {
+  font-size: 2.8rem;
+  color: #2563eb;
+  opacity: 0.35;
+  margin-bottom: 0.8rem;
+}
+
+.dashboard-panel {
   display: grid;
   gap: 1rem;
 }
 
-.create-ticket-grid {
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.8rem;
+  background: #f8fafc;
+}
+
+.dash-title h2 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.dash-title p {
+  margin: 0.35rem 0 0;
+  color: #334155;
+}
+
+.dash-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5e1;
+  padding: 0.85rem;
+}
+
+.summary-card i {
+  font-size: 1.35rem;
+}
+
+.summary-info {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.summary-count {
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.summary-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #334155;
+}
+
+.card-total {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.card-total i,
+.card-total .summary-count {
+  color: #1d4ed8;
+}
+
+.card-pending {
+  background: #fef3c7;
+  border-color: #fcd34d;
+}
+
+.card-pending i,
+.card-pending .summary-count {
+  color: #92400e;
+}
+
+.card-progress {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+}
+
+.card-progress i,
+.card-progress .summary-count {
+  color: #3730a3;
+}
+
+.card-revision {
+  background: #f3e8ff;
+  border-color: #d8b4fe;
+}
+
+.card-revision i,
+.card-revision .summary-count {
+  color: #6b21a8;
+}
+
+.card-done {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.card-done i,
+.card-done .summary-count {
+  color: #166534;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.8rem;
+  background: #f8fafc;
+}
+
+.view-toggle {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.list-view {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.8rem;
+  padding: 0.7rem;
+  background: #ffffff;
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+/* Mismo estilo del tablero de /tickets */
+.kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 0.8rem;
+  overflow-x: auto;
+}
+
+.kanban-column {
+  min-height: 360px;
+  padding: 0.75rem;
+  border: 1px dashed #94a3b8;
+  border-radius: 0.75rem;
+  background: #e2e8f0;
+  color: #111827;
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+}
+
+.kanban-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kanban-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.kanban-ticket {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  padding: 0.7rem;
+  display: grid;
+  gap: 0.45rem;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.kanban-ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kanban-ticket-desc,
+.kanban-ticket-meta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.kanban-ticket-meta {
+  color: #475569;
+}
+
+.kanban-ticket-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ticket-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.9rem;
 }
 
 .field-item {
   display: grid;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
-.field-item--full {
+.field-item label {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Dialog is rendered in overlay container, so use deep selectors for contrast. */
+:host ::ng-deep .p-dialog .ticket-form .field-item label {
+  color: #0f172a !important;
+  font-weight: 700;
+}
+
+:host ::ng-deep .p-dialog .ticket-form input,
+:host ::ng-deep .p-dialog .ticket-form textarea {
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.field--full {
   grid-column: 1 / -1;
 }
 
-@media (max-width: 992px) {
-  .dashboard-layout {
+.form-actions {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .dash-layout {
     grid-template-columns: 1fr;
   }
 
-  .status-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .groups-panel {
+    position: static;
   }
 
-  .kanban-preview {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .charts {
-    grid-template-columns: 1fr;
-  }
-
-  .filter-row,
-  .create-ticket-grid {
-    grid-template-columns: 1fr;
+  .kanban-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
   }
 }
 
 @media (max-width: 640px) {
-  .status-grid {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ticket-form-grid {
     grid-template-columns: 1fr;
   }
 
-  .kanban-preview {
+  .kanban-grid {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-head {
+  .dash-header {
     flex-direction: column;
   }
 }

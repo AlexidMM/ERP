@@ -1,241 +1,303 @@
-<section class="home" aria-label="Inicio del sistema ERP">
+<section class="home" aria-label="Dashboard ERP">
   @if (feedback(); as status) {
     <p-message [severity]="status.severity" [text]="status.text"></p-message>
   }
 
-  <div class="dashboard-layout">
+  <div class="dash-layout">
+    <!-- Panel de grupos -->
     <p-card class="groups-panel" header="Grupos">
-      <p class="description">Selecciona un grupo para cargar su dashboard.</p>
-
+      <p class="groups-hint">Selecciona un grupo para ver su tablero.</p>
       @if (availableGroups().length === 0) {
         <p-message
           severity="warn"
-          text="No tienes grupos asignados. Pide a un admin que te agregue a un grupo."
+          text="Sin grupos asignados. Pide al admin que te agregue."
         ></p-message>
       } @else {
-        <div class="groups-list" aria-label="Lista vertical de grupos">
+        <div class="groups-list">
           @for (group of availableGroups(); track group.id) {
             <button
               pButton
               type="button"
-              class="group-item"
+              class="group-btn"
               severity="secondary"
               variant="text"
-              [class.group-item--active]="selectedGroupId() === group.id"
+              [class.group-btn--active]="selectedGroupId() === group.id"
               (click)="onSelectGroup(group.id)"
             >
-              <span class="group-name">{{ group.nombre }}</span>
-              <span class="group-info">{{ group.members.length }} integrantes</span>
+              <span class="group-btn-name">{{ group.nombre }}</span>
+              <span class="group-btn-info">{{ group.members.length }} miembros</span>
             </button>
           }
         </div>
       }
     </p-card>
 
-    <p-card class="dashboard-panel" header="Dashboard del Grupo Seleccionado">
-      @if (!selectedGroup()) {
-        <p-message severity="info" text="Selecciona un grupo de la lista para ver sus tickets."></p-message>
-      } @else {
-        <div class="dashboard-head">
-          <div>
-            <h3>{{ selectedGroup()!.nombre }}</h3>
+    <!-- Panel del dashboard -->
+    @if (!selectedGroup()) {
+      <p-card class="dashboard-empty">
+        <div class="empty-state">
+          <i class="pi pi-arrow-circle-left empty-icon"></i>
+          <p>Selecciona un grupo de la lista para ver su tablero de tickets.</p>
+        </div>
+      </p-card>
+    } @else {
+      <div class="dashboard-panel">
+        <!-- Header del grupo -->
+        <div class="dash-header">
+          <div class="dash-title">
+            <h2>{{ selectedGroup()!.nombre }}</h2>
             <p>{{ selectedGroup()!.descripcion }}</p>
           </div>
-          <div class="actions">
+          <div class="dash-actions">
+            @if (canAddTickets()) {
+              <p-button
+                label="Nuevo ticket"
+                icon="pi pi-plus"
+                (onClick)="openCreateTicket()"
+              ></p-button>
+            }
             <p-button
-              type="button"
-              label="Crear ticket"
-              icon="pi pi-plus"
-              [disabled]="!canAddTickets()"
-              (onClick)="openCreateTicketDialog()"
-            ></p-button>
-            <p-button
-              type="button"
-              label="Abrir tablero"
-              icon="pi pi-ticket"
-              [disabled]="!canSeeTickets()"
-              (onClick)="onOpenBoard()"
-            ></p-button>
-            <p-button
-              type="button"
               label="Cambiar grupo"
               severity="secondary"
               variant="outlined"
-              icon="pi pi-refresh"
+              icon="pi pi-sync"
               (onClick)="onClearGroupSelection()"
             ></p-button>
           </div>
         </div>
 
-        <div class="filter-row" aria-label="Filtros en dashboard">
-          <div class="filter-item">
-            <label for="home-status-filter">Estado</label>
-            <p-select
-              inputId="home-status-filter"
-              [options]="statusFilterOptions"
-              [ngModel]="selectedStatusFilter()"
-              (ngModelChange)="onStatusFilterChange($event)"
-            ></p-select>
-          </div>
-          <div class="filter-item">
-            <label for="home-priority-filter">Prioridad</label>
-            <p-select
-              inputId="home-priority-filter"
-              [options]="priorityFilterOptions"
-              [ngModel]="selectedPriorityFilter()"
-              (ngModelChange)="onPriorityFilterChange($event)"
-            ></p-select>
-          </div>
-          <div class="filter-actions">
-            <p-button
-              type="button"
-              label="Limpiar"
-              severity="secondary"
-              variant="outlined"
-              icon="pi pi-filter-slash"
-              (onClick)="clearFilters()"
-            ></p-button>
-          </div>
-        </div>
-
-        <div class="status-grid" aria-label="Resumen de estado">
-          @for (status of selectedGroupStatusSummary(); track status.label) {
-            <article class="status-card">
-              <h4>{{ status.label }}</h4>
-              <p>{{ status.total }}</p>
-            </article>
+        <!-- Indicadores / Conteos -->
+        <div class="summary-grid">
+          @for (card of summaryCards(); track card.label) {
+            <div class="summary-card {{ card.colorClass }}">
+              <i [class]="card.icon"></i>
+              <div class="summary-info">
+                <span class="summary-count">{{ card.count }}</span>
+                <span class="summary-label">{{ card.label }}</span>
+              </div>
+            </div>
           }
         </div>
 
-        <section class="kanban-preview" aria-label="Conteo por columnas Kanban">
-          @for (column of kanbanColumns(); track column.status) {
-            <article class="kanban-mini-column">
-              <header>
-                <h4>{{ column.status }}</h4>
-                <p-tag [value]="column.tickets.length.toString()" severity="secondary"></p-tag>
-              </header>
-              @if (column.tickets.length === 0) {
-                <p class="kanban-empty">Sin tickets</p>
-              } @else {
-                <ul>
-                  @for (ticket of column.tickets.slice(0, 3); track ticket.id) {
-                    <li>{{ ticket.title }}</li>
-                  }
-                </ul>
-              }
-            </article>
-          }
-        </section>
+        <!-- Filtros -->
+        <div class="filter-bar">
+          <p-select
+            [options]="statusFilterOptions"
+            [ngModel]="selectedStatusFilter()"
+            (ngModelChange)="onStatusFilterChange($event)"
+            placeholder="Estado"
+          ></p-select>
+          <p-select
+            [options]="priorityFilterOptions"
+            [ngModel]="selectedPriorityFilter()"
+            (ngModelChange)="onPriorityFilterChange($event)"
+            placeholder="Prioridad"
+          ></p-select>
+          <p-button
+            severity="secondary"
+            variant="outlined"
+            icon="pi pi-filter-slash"
+            label="Limpiar"
+            (onClick)="clearFilters()"
+          ></p-button>
+        </div>
 
-        @if (filteredGroupTickets().length === 0) {
-          <p-message severity="info" text="Este grupo aun no tiene tickets."></p-message>
-        } @else {
-          <p-table [value]="filteredGroupTickets()" styleClass="p-datatable-sm" [rows]="6" [paginator]="true">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Titulo</th>
-                <th>Estado</th>
-                <th>Asignado</th>
-                <th>Prioridad</th>
-                <th>Fecha limite</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-ticket>
-              <tr>
-                <td>{{ ticket.title }}</td>
-                <td><p-tag [value]="ticket.status" severity="info"></p-tag></td>
-                <td>{{ ticket.assignedTo || 'Sin asignar' }}</td>
-                <td><p-tag [value]="ticket.priority" severity="contrast"></p-tag></td>
-                <td>{{ formatDate(ticket.dueDate) }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
+        <!-- Toggle de vista: Kanban / Lista -->
+        <div class="view-toggle">
+          <p-selectButton
+            [options]="viewOptions"
+            [ngModel]="viewMode()"
+            (ngModelChange)="viewMode.set($event)"
+            optionLabel="label"
+            optionValue="value"
+          ></p-selectButton>
+        </div>
+
+        <!-- Vista Kanban -->
+        @if (viewMode() === 'kanban') {
+          <div class="kanban-grid" aria-label="Tablero Kanban">
+            @for (column of kanbanColumns(); track column.status) {
+              <section class="kanban-column" (dragover)="$event.preventDefault()" (drop)="onDropStatus(column.status)">
+                <header class="kanban-header">
+                  <h3>{{ column.status }}</h3>
+                  <p-tag [value]="column.tickets.length.toString()" severity="secondary"></p-tag>
+                </header>
+
+                @if (column.tickets.length === 0) {
+                  <p-message severity="info" text="Sin tickets en esta columna."></p-message>
+                }
+
+                @for (ticket of column.tickets; track ticket.id) {
+                  <article
+                    class="kanban-ticket"
+                    [draggable]="canChangeStateTicket(ticket)"
+                    (dragstart)="onStartDrag(ticket.id)"
+                    (dragend)="onEndDrag()"
+                  >
+                    <header class="kanban-ticket-header">
+                      <strong>{{ ticket.title }}</strong>
+                      <p-tag [value]="ticket.priority" [severity]="prioritySeverity(ticket.priority)"></p-tag>
+                    </header>
+                    <p class="kanban-ticket-desc">{{ ticket.description }}</p>
+                    <p class="kanban-ticket-meta">Asignado: {{ ticket.assignedTo || 'Sin asignar' }}</p>
+                    <p class="kanban-ticket-meta">Limite: {{ formatDate(ticket.dueDate) }}</p>
+                    <div class="kanban-ticket-actions">
+                      @if (canChangeStateTicket(ticket) || canEditFullTicket(ticket)) {
+                        <p-button
+                          size="small"
+                          label="Editar estado"
+                          icon="pi pi-refresh"
+                          severity="help"
+                          (onClick)="openEditTicket(ticket.id)"
+                        ></p-button>
+                      }
+                      @if (canDeleteTickets()) {
+                        <p-button
+                          size="small"
+                          label="Eliminar"
+                          icon="pi pi-trash"
+                          severity="danger"
+                          (onClick)="onDelete(ticket.id)"
+                        ></p-button>
+                      }
+                    </div>
+                  </article>
+                }
+              </section>
+            }
+          </div>
         }
 
-        <section class="charts" aria-label="Graficas de tickets">
-          <article class="chart-item">
-            <header>
-              <h4>Tickets por estado</h4>
-            </header>
-            <p-chart
-              type="doughnut"
-              [data]="completedChartData()"
-              [options]="completedChartOptions"
-              styleClass="chart-canvas"
-            ></p-chart>
-          </article>
-
-          <article class="chart-item">
-            <header>
-              <h4>Trabajo completado por persona</h4>
-            </header>
-            @if (workByPersonChartData().labels.length === 0) {
-              <p class="chart-empty">Sin tickets completados aún.</p>
+        <!-- Vista Lista -->
+        @if (viewMode() === 'lista') {
+          <div class="list-view">
+            @if (filteredGroupTickets().length === 0) {
+              <p-message severity="info" text="Sin tickets para los filtros actuales."></p-message>
             } @else {
-              <p-chart
-                type="bar"
-                [data]="workByPersonChartData()"
-                [options]="workByPersonChartOptions"
-                styleClass="chart-canvas"
-              ></p-chart>
+              <p-table
+                [value]="filteredGroupTickets()"
+                styleClass="p-datatable-sm"
+                [paginator]="true"
+                [rows]="8"
+                sortMode="single"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="title">
+                      Titulo <p-sortIcon field="title"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="status">
+                      Estado <p-sortIcon field="status"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="assignedTo">
+                      Asignado <p-sortIcon field="assignedTo"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="priority">
+                      Prioridad <p-sortIcon field="priority"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="dueDate">
+                      Vence <p-sortIcon field="dueDate"></p-sortIcon>
+                    </th>
+                    <th>Acciones</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-ticket>
+                  <tr>
+                    <td>{{ ticket.title }}</td>
+                    <td>
+                      <p-tag
+                        [value]="ticket.status"
+                        [severity]="statusSeverity(ticket.status)"
+                      ></p-tag>
+                    </td>
+                    <td>{{ ticket.assignedTo || 'Sin asignar' }}</td>
+                    <td>
+                      <p-tag
+                        [value]="ticket.priority"
+                        [severity]="prioritySeverity(ticket.priority)"
+                      ></p-tag>
+                    </td>
+                    <td>{{ formatDate(ticket.dueDate) }}</td>
+                    <td>
+                      <div class="table-actions">
+                        @if (canChangeStateTicket(ticket) || canEditFullTicket(ticket)) {
+                          <p-button
+                            size="small"
+                            label="Editar"
+                            severity="secondary"
+                            (onClick)="openEditTicket(ticket.id)"
+                          ></p-button>
+                        }
+                        @if (canDeleteTickets()) {
+                          <p-button
+                            size="small"
+                            label="Eliminar"
+                            severity="danger"
+                            (onClick)="onDelete(ticket.id)"
+                          ></p-button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             }
-          </article>
-
-          <article class="chart-item">
-            <header>
-              <h4>Distribución por prioridad</h4>
-            </header>
-            <p-chart
-              type="pie"
-              [data]="priorityChartData()"
-              [options]="priorityChartOptions"
-              styleClass="chart-canvas"
-            ></p-chart>
-          </article>
-        </section>
-      }
-    </p-card>
+          </div>
+        }
+      </div>
+    }
   </div>
 </section>
 
+<!-- Dialog de ticket: crear / editar -->
 <p-dialog
-  header="Crear Ticket desde Home"
+  [header]="dialogTitle()"
   [modal]="true"
-  [visible]="showCreateTicketDialog()"
+  [visible]="showTicketDialog()"
   [style]="{ width: 'min(700px, 95vw)' }"
-  (visibleChange)="showCreateTicketDialog.set($event)"
+  (visibleChange)="showTicketDialog.set($event)"
 >
-  <form [formGroup]="createTicketForm" (ngSubmit)="submitCreateTicket()" class="create-ticket-form" novalidate>
-    <div class="create-ticket-grid">
+  <form [formGroup]="ticketForm" (ngSubmit)="submitTicket()" novalidate class="ticket-form">
+    <div class="ticket-form-grid">
       <div class="field-item">
-        <label for="home-ticket-title">Titulo</label>
-        <input id="home-ticket-title" pInputText type="text" formControlName="title" />
+        <label for="t-title">Titulo</label>
+        <input id="t-title" pInputText type="text" formControlName="title" />
       </div>
       <div class="field-item">
-        <label for="home-ticket-assigned">Asignado a</label>
-        <input id="home-ticket-assigned" pInputText type="text" formControlName="assignedTo" placeholder="Opcional" />
+        <label for="t-assigned">Asignado a</label>
+        <input
+          id="t-assigned"
+          pInputText
+          type="text"
+          formControlName="assignedTo"
+          placeholder="Opcional"
+        />
       </div>
       <div class="field-item">
-        <label for="home-ticket-priority">Prioridad</label>
-        <p-select inputId="home-ticket-priority" [options]="priorityFilterOptions.slice(1)" formControlName="priority"></p-select>
+        <label for="t-priority">Prioridad</label>
+        <p-select inputId="t-priority" [options]="priorities" formControlName="priority"></p-select>
       </div>
       <div class="field-item">
-        <label for="home-ticket-status">Estado</label>
-        <p-select inputId="home-ticket-status" [options]="statusFilterOptions.slice(1)" formControlName="status"></p-select>
+        <label for="t-status">Estado</label>
+        <p-select inputId="t-status" [options]="statuses" formControlName="status"></p-select>
       </div>
       <div class="field-item">
-        <label for="home-ticket-date">Fecha limite</label>
-        <input id="home-ticket-date" pInputText type="date" formControlName="dueDate" />
+        <label for="t-date">Fecha limite</label>
+        <input id="t-date" pInputText type="date" formControlName="dueDate" />
       </div>
-      <div class="field-item field-item--full">
-        <label for="home-ticket-description">Descripcion</label>
-        <textarea id="home-ticket-description" pTextarea rows="3" formControlName="description"></textarea>
+      <div class="field-item field--full">
+        <label for="t-desc">Descripcion</label>
+        <textarea id="t-desc" pTextarea rows="3" formControlName="description"></textarea>
       </div>
     </div>
-
-    <div class="actions">
-      <p-button type="submit" label="Crear ticket"></p-button>
-      <p-button type="button" label="Cancelar" severity="secondary" (onClick)="closeCreateTicketDialog()"></p-button>
+    <div class="form-actions">
+      <p-button type="submit" [label]="submitLabel()"></p-button>
+      <p-button
+        type="button"
+        severity="secondary"
+        label="Cancelar"
+        (onClick)="closeTicketDialog()"
+      ></p-button>
     </div>
   </form>
 </p-dialog>

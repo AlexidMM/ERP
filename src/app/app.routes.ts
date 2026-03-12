@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { groupsCrudGuard } from './guards/groups-crud.guard';
 import { usersManagementGuard } from './guards/users-management.guard';
+import { ticketViewGuard } from './guards/ticket-view.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'landing' },
@@ -37,6 +38,7 @@ export const routes: Routes = [
       },
       {
         path: 'tickets',
+         canActivate: [ticketViewGuard],
         loadComponent: () => import('./pages/tickets/tickets').then((m) => m.TicketsComponent)
       }
     ]

@@ -32,13 +32,11 @@ export class SidebarComponent {
       }
     ];
 
-    if (this.permissionsService.hasPermission('user:view')) {
       items.push({
         label: 'Mi perfil',
-        icon: 'pi pi-users',
+        icon: 'pi pi-user',
         routerLink: '/home/users'
       });
-    }
 
     if (this.permissionsService.hasPermission('user:add')) {
       items.push({
@@ -50,7 +48,7 @@ export class SidebarComponent {
 
     if (this.permissionsService.hasAnyPermission(['group:add', 'group:edit', 'group:delete'])) {
       items.push({
-        label: 'Groups',
+          label: 'Gestionar Grupos',
         icon: 'pi pi-th-large',
         routerLink: '/home/groups'
       });

@@ -101,58 +101,6 @@
       </div>
     </p-card>
 
-    <p-card header="Tablero de Tickets">
-      <div class="kanban-grid" aria-label="Tablero Kanban">
-        @for (column of groupedByStatus(); track column.status) {
-          <section class="kanban-column" (dragover)="$event.preventDefault()" (drop)="onDropStatus(column.status)">
-            <header class="kanban-header">
-              <h3>{{ column.status }}</h3>
-              <p-tag [value]="column.tickets.length.toString()" severity="secondary"></p-tag>
-            </header>
-
-            @if (column.tickets.length === 0) {
-              <p-message severity="info" text="Sin tickets en esta columna."></p-message>
-            }
-
-            @for (ticket of column.tickets; track ticket.id) {
-              <article
-                class="kanban-ticket"
-                [draggable]="canChangeStateTicket(ticket)"
-                (dragstart)="onStartDrag(ticket.id)"
-                (dragend)="onEndDrag()"
-              >
-                <header class="kanban-ticket-header">
-                  <strong>{{ ticket.title }}</strong>
-                  <p-tag [value]="ticket.priority" [severity]="prioritySeverity(ticket.priority)"></p-tag>
-                </header>
-                <p class="kanban-ticket-desc">{{ ticket.description }}</p>
-                <p class="kanban-ticket-meta">Asignado: {{ ticket.assignedTo }}</p>
-                <p class="kanban-ticket-meta">Limite: {{ formatDate(ticket.dueDate) }}</p>
-                <div class="kanban-ticket-actions">
-                  <p-button
-                    size="small"
-                    label="Detalle"
-                    icon="pi pi-eye"
-                    severity="secondary"
-                    (onClick)="openDetailDialog(ticket.id)"
-                  ></p-button>
-                  @if (canChangeStateTicket(ticket)) {
-                    <p-button
-                      size="small"
-                      label="Editar estado"
-                      icon="pi pi-refresh"
-                      severity="help"
-                      (onClick)="onEditStatus(ticket.id)"
-                    ></p-button>
-                  }
-                </div>
-              </article>
-            }
-          </section>
-        }
-      </div>
-    </p-card>
-
     <p-card class="tickets-crud-card" header="Lista de Tickets">
       <div class="tickets-list" aria-label="Tabla de tickets">
         @if (filteredTickets().length === 0) {
