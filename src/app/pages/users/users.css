@@ -78,12 +78,6 @@
   font-weight: 700;
 }
 
-.permissions-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.9rem;
-}
-
 .field-item--full {
   grid-column: 1 / -1;
 }

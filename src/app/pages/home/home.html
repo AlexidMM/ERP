@@ -153,18 +153,45 @@
         }
 
         <section class="charts" aria-label="Graficas de tickets">
-          @for (item of chartSummary(); track item.label) {
-            <article class="chart-item">
-              <header>
-                <h4>{{ item.label }}</h4>
-                <strong>{{ item.total }}</strong>
-              </header>
-              <div class="bar-track" role="img" [attr.aria-label]="item.label + ' ' + item.percent + '%'">
-                <div class="bar-fill" [style.width.%]="item.percent"></div>
-              </div>
-              <p>{{ item.percent }}%</p>
-            </article>
-          }
+          <article class="chart-item">
+            <header>
+              <h4>Tickets por estado</h4>
+            </header>
+            <p-chart
+              type="doughnut"
+              [data]="completedChartData()"
+              [options]="completedChartOptions"
+              styleClass="chart-canvas"
+            ></p-chart>
+          </article>
+
+          <article class="chart-item">
+            <header>
+              <h4>Trabajo completado por persona</h4>
+            </header>
+            @if (workByPersonChartData().labels.length === 0) {
+              <p class="chart-empty">Sin tickets completados aún.</p>
+            } @else {
+              <p-chart
+                type="bar"
+                [data]="workByPersonChartData()"
+                [options]="workByPersonChartOptions"
+                styleClass="chart-canvas"
+              ></p-chart>
+            }
+          </article>
+
+          <article class="chart-item">
+            <header>
+              <h4>Distribución por prioridad</h4>
+            </header>
+            <p-chart
+              type="pie"
+              [data]="priorityChartData()"
+              [options]="priorityChartOptions"
+              styleClass="chart-canvas"
+            ></p-chart>
+          </article>
         </section>
       }
     </p-card>

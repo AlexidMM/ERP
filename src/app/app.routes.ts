@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { groupsCrudGuard } from './guards/groups-crud.guard';
+import { usersManagementGuard } from './guards/users-management.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'landing' },
@@ -22,6 +23,12 @@ export const routes: Routes = [
       {
         path: 'users',
         loadComponent: () => import('./pages/users/users').then((m) => m.UsersComponent)
+      },
+      {
+        path: 'lista-users',
+        canActivate: [usersManagementGuard],
+        loadComponent: () =>
+          import('./pages/listaUsers/listaUsers').then((m) => m.ListaUsersComponent)
       },
       {
         path: 'groups',

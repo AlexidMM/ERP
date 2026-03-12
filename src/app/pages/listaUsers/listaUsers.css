@@ -1,0 +1,63 @@
+.lista-users {
+  max-width: 1220px;
+  margin: 0 auto;
+}
+
+.lista-users-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.95rem;
+}
+
+.field-item {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 0.75rem;
+  background: var(--p-surface-100);
+}
+
+.field-item label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--p-surface-900);
+}
+
+.field-item input {
+  color: var(--p-surface-900);
+  background: var(--p-surface-0);
+}
+
+.field-item--full {
+  grid-column: 1 / -1;
+}
+
+.users-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.row-selected {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: -2px;
+}
+
+@media (max-width: 768px) {
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+}

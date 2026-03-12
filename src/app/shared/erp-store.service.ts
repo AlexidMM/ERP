@@ -16,6 +16,17 @@ export interface SessionUser {
   email: string;
 }
 
+export interface UserRecord {
+  key: string;
+  username: string;
+  email: string;
+  fullName: string;
+  address: string;
+  phone: string;
+  birthDate: string;
+  password: string;
+}
+
 export interface GroupRecord {
   id: string;
   nivel: string;
@@ -59,6 +70,7 @@ export interface TicketRecord {
 export class ErpStoreService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly profileStorageKey = 'erp.profile';
+  private readonly usersStorageKey = 'erp.users';
   private readonly groupsStorageKey = 'erp.groups';
   private readonly ticketsStorageKey = 'erp.tickets';
   private readonly userPermissionsStorageKey = 'erp.user-permissions';
@@ -66,6 +78,7 @@ export class ErpStoreService {
   private readonly selectedGroupStorageKey = 'erp.selected-group';
 
   private readonly _profile = signal<ProfileRecord | null>(this.readProfileFromStorage());
+  private readonly _users = signal<UserRecord[]>(this.readUsersFromStorage());
   private readonly _groups = signal<GroupRecord[]>(this.readGroupsFromStorage());
   private readonly _tickets = signal<TicketRecord[]>(this.readTicketsFromStorage());
   private readonly _userPermissions = signal<Record<string, string[]>>(
@@ -75,6 +88,7 @@ export class ErpStoreService {
   private readonly _selectedGroupId = signal<string | null>(this.readSelectedGroupFromStorage());
 
   readonly profile = this._profile.asReadonly();
+  readonly users = this._users.asReadonly();
   readonly groups = this._groups.asReadonly();
   readonly tickets = this._tickets.asReadonly();
   readonly userPermissions = this._userPermissions.asReadonly();
@@ -119,6 +133,63 @@ export class ErpStoreService {
   saveProfile(profile: ProfileRecord): void {
     this._profile.set(profile);
     this.writeStorage(this.profileStorageKey, profile);
+  }
+
+  upsertUser(user: Omit<UserRecord, 'key'>, previousKey?: string): void {
+    const normalizedUser = this.normalizeUserRecord(user);
+    if (!normalizedUser) {
+      return;
+    }
+
+    const current = this._users();
+    const normalizedPreviousKey = this.normalizeUserKey(previousKey ?? '');
+    const existingIndex = current.findIndex((item) =>
+      normalizedPreviousKey ? item.key === normalizedPreviousKey : item.key === normalizedUser.key
+    );
+
+    const candidate = {
+      ...normalizedUser
+    };
+
+    if (existingIndex >= 0) {
+      const targetKey = current[existingIndex].key;
+      const updated = current.map((item, index) =>
+        index === existingIndex
+          ? {
+              ...candidate,
+              key: targetKey
+            }
+          : item
+      );
+
+      this._users.set(updated);
+      this.writeStorage(this.usersStorageKey, updated);
+      return;
+    }
+
+    const next = [...current, candidate];
+    this._users.set(next);
+    this.writeStorage(this.usersStorageKey, next);
+  }
+
+  deleteUser(userKey: string): void {
+    const normalizedKey = this.normalizeUserKey(userKey);
+    if (!normalizedKey || normalizedKey === 'admin@erp.com') {
+      return;
+    }
+
+    const next = this._users().filter((item) => item.key !== normalizedKey);
+    this._users.set(next);
+    this.writeStorage(this.usersStorageKey, next);
+  }
+
+  getUserByKey(userKey: string): UserRecord | null {
+    const normalizedKey = this.normalizeUserKey(userKey);
+    if (!normalizedKey) {
+      return null;
+    }
+
+    return this._users().find((item) => item.key === normalizedKey) ?? null;
   }
 
   clearProfile(): void {
@@ -359,6 +430,67 @@ export class ErpStoreService {
     }));
   }
 
+  private readUsersFromStorage(): UserRecord[] {
+    const rawUsers = this.readStorage<Array<Partial<UserRecord>>>(this.usersStorageKey) ?? [];
+
+    if (rawUsers.length === 0) {
+      return [
+        {
+          key: 'admin@erp.com',
+          username: 'admin',
+          email: 'admin@erp.com',
+          fullName: 'Administrador ERP',
+          address: 'Oficina Central',
+          phone: '5551234567',
+          birthDate: '1990-01-01',
+          password: 'Admin@12345'
+        },
+        {
+          key: 'user@erp.com',
+          username: 'user',
+          email: 'user@erp.com',
+          fullName: 'Usuario ERP',
+          address: 'Sucursal Norte',
+          phone: '5559876543',
+          birthDate: '1995-02-10',
+          password: 'User@12345'
+        }
+      ];
+    }
+
+    const normalizedUsers = rawUsers
+      .map((user) =>
+        this.normalizeUserRecord({
+          username: String(user.username ?? ''),
+          email: String(user.email ?? ''),
+          fullName: String(user.fullName ?? ''),
+          address: String(user.address ?? ''),
+          phone: String(user.phone ?? ''),
+          birthDate: String(user.birthDate ?? ''),
+          password: String(user.password ?? '')
+        })
+      )
+      .filter((user): user is UserRecord => user !== null);
+
+    if (normalizedUsers.some((user) => user.key === 'admin@erp.com')) {
+      return normalizedUsers;
+    }
+
+    return [
+      {
+        key: 'admin@erp.com',
+        username: 'admin',
+        email: 'admin@erp.com',
+        fullName: 'Administrador ERP',
+        address: 'Oficina Central',
+        phone: '5551234567',
+        birthDate: '1990-01-01',
+        password: 'Admin@12345'
+      },
+      ...normalizedUsers
+    ];
+  }
+
   private readTicketsFromStorage(): TicketRecord[] {
     const rawTickets = this.readStorage<Array<Partial<TicketRecord>>>(this.ticketsStorageKey) ?? [];
 
@@ -591,6 +723,35 @@ export class ErpStoreService {
       .filter((permission) => permission.length > 0);
 
     return Array.from(new Set(normalized));
+  }
+
+  private normalizeUserRecord(user: Omit<UserRecord, 'key'>): UserRecord | null {
+    const email = this.normalizeUserKey(user.email);
+    if (!email) {
+      return null;
+    }
+
+    const username = user.username.replace(/\s+/g, '').trim();
+    const fullName = user.fullName.replace(/\s+/g, ' ').trim();
+    const address = user.address.replace(/\s+/g, ' ').trim();
+    const phone = user.phone.replace(/\D/g, '').slice(0, 10);
+    const birthDate = user.birthDate.trim();
+    const password = user.password.replace(/\s+/g, '').trim();
+
+    if (!username || !fullName || !address || !phone || !birthDate || !password) {
+      return null;
+    }
+
+    return {
+      key: email,
+      username,
+      email,
+      fullName,
+      address,
+      phone,
+      birthDate,
+      password
+    };
   }
 
   private normalizeUserKey(userKey: string): string {

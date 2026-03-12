@@ -34,9 +34,17 @@ export class SidebarComponent {
 
     if (this.permissionsService.hasPermission('user:view')) {
       items.push({
-        label: 'Users',
+        label: 'Mi perfil',
         icon: 'pi pi-users',
         routerLink: '/home/users'
+      });
+    }
+
+    if (this.permissionsService.hasPermission('user:add')) {
+      items.push({
+        label: 'Usuarios y permisos',
+        icon: 'pi pi-users',
+        routerLink: '/home/lista-users'
       });
     }
 
@@ -70,6 +78,7 @@ export class SidebarComponent {
     this.permissionsService.permissions();
     return this.permissionsService.hasAnyPermission([
       'user:view',
+      'user:add',
       'group:add',
       'group:edit',
       'group:delete',

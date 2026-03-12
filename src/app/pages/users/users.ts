@@ -3,7 +3,6 @@ import {
   AbstractControl,
   FormControl,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
@@ -13,9 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { MultiSelectModule } from 'primeng/multiselect';
 import { PasswordModule } from 'primeng/password';
-import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { PermissionsService } from '../../services/permissions.service';
@@ -69,11 +66,8 @@ function matchingPasswordsValidator(): ValidatorFn {
 @Component({
   selector: 'app-users',
   imports: [
-    FormsModule,
     ReactiveFormsModule,
     CardModule,
-    SelectModule,
-    MultiSelectModule,
     TableModule,
     TagModule,
     InputTextModule,
@@ -92,44 +86,12 @@ export class UsersComponent {
   readonly profile = computed(() => this.erpStore.profile());
   readonly feedback = signal<{ severity: 'success' | 'error' | 'warn'; text: string } | null>(null);
   readonly canViewUsers = computed(() => this.permissionsService.hasPermission('user:view'));
-  readonly canAddUsers = computed(() => this.permissionsService.hasPermission('user:add'));
   readonly canEditUsers = computed(() => this.permissionsService.hasPermission('user:edit'));
   readonly canManageUsers = computed(() =>
-    this.permissionsService.hasAnyPermission(['user:add', 'user:edit'])
+    this.permissionsService.hasAnyPermission(['user:edit', 'user:delete'])
   );
-  readonly canSaveUsers = computed(() => {
-    if (this.profile()) {
-      return this.canEditUsers();
-    }
-
-    return this.canAddUsers();
-  });
+  readonly canSaveUsers = computed(() => this.canEditUsers() && this.profile() !== null);
   readonly canDeleteUsers = computed(() => this.permissionsService.hasPermission('user:delete'));
-  readonly editablePermissions = signal<string[]>([]);
-  readonly currentSessionUser = computed(() => this.erpStore.sessionUser()?.key ?? '');
-  readonly isSuperAdmin = computed(() => this.currentSessionUser() === 'admin@erp.com');
-  readonly canManagePermissionAssignments = computed(() =>
-    this.permissionsService.hasPermission('user:delete') && this.isSuperAdmin()
-  );
-
-  readonly availablePermissions = this.permissionsService.getFullPermissions();
-
-  readonly knownUsers = computed(() => {
-    const profile = this.profile();
-    const candidates = ['admin@erp.com', 'user@erp.com'];
-
-    if (profile?.email) {
-      candidates.push(profile.email);
-    }
-
-    if (profile?.username) {
-      candidates.push(profile.username);
-    }
-
-    return Array.from(new Set(candidates.map((item) => item.trim()).filter((item) => item.length > 0)));
-  });
-
-  readonly permissionTarget = signal('admin@erp.com');
 
   readonly assignedTickets = computed(() => {
     const currentProfile = this.profile();
@@ -224,15 +186,6 @@ export class UsersComponent {
       });
       this.usersForm.markAsUntouched();
     });
-
-    effect(() => {
-      const known = this.knownUsers();
-      if (!known.includes(this.permissionTarget())) {
-        this.permissionTarget.set(known[0] ?? 'admin@erp.com');
-      }
-
-      this.loadPermissionsForTarget(this.permissionTarget());
-    });
   }
 
   onTextInputWithoutSpaces(field: 'username' | 'email', event: Event): void {
@@ -258,16 +211,20 @@ export class UsersComponent {
   }
 
   onSubmit(): void {
-    const canAdd = this.permissionsService.hasPermission('user:add');
-    const canEdit = this.permissionsService.hasPermission('user:edit');
     const hasProfile = this.profile() !== null;
 
-    if ((hasProfile && !canEdit) || (!hasProfile && !canAdd)) {
+    if (!hasProfile) {
+      this.feedback.set({
+        severity: 'warn',
+        text: 'No hay perfil cargado para editar.'
+      });
+      return;
+    }
+
+    if (!this.canEditUsers()) {
       this.feedback.set({
         severity: 'error',
-        text: hasProfile
-          ? 'No cuentas con permiso para editar usuarios.'
-          : 'No cuentas con permiso para agregar usuarios.'
+        text: 'No cuentas con permiso para editar usuarios.'
       });
       return;
     }
@@ -308,32 +265,6 @@ export class UsersComponent {
     });
   }
 
-  onPermissionTargetChange(target: string): void {
-    this.permissionTarget.set(target);
-    this.loadPermissionsForTarget(target);
-  }
-
-  onPermissionSelectionChange(permissions: string[]): void {
-    this.editablePermissions.set(permissions);
-  }
-
-  savePermissions(): void {
-    if (!this.canManagePermissionAssignments()) {
-      this.feedback.set({
-        severity: 'error',
-        text: 'Solo el super admin puede gestionar permisos de usuarios.'
-      });
-      return;
-    }
-
-    const target = this.permissionTarget();
-    this.erpStore.saveUserPermissions(target, this.editablePermissions());
-    this.feedback.set({
-      severity: 'success',
-      text: `Permisos actualizados para ${target}.`
-    });
-  }
-
   formatDate(value: string): string {
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) {
@@ -347,7 +278,9 @@ export class UsersComponent {
     });
   }
 
-  ticketStatusSeverity(status: 'Pendiente' | 'En progreso' | 'Revision' | 'Hecho'): 'secondary' | 'info' | 'warn' | 'success' {
+  ticketStatusSeverity(
+    status: 'Pendiente' | 'En progreso' | 'Revision' | 'Hecho'
+  ): 'secondary' | 'info' | 'warn' | 'success' {
     if (status === 'Pendiente') {
       return 'secondary';
     }
@@ -376,24 +309,5 @@ export class UsersComponent {
 
     const addressControl = this.usersForm.controls.address;
     addressControl.setValue(addressControl.value.replace(/\s+/g, ' ').trim(), { emitEvent: false });
-  }
-
-  private loadPermissionsForTarget(target: string): void {
-    const storedPermissions = this.erpStore.getUserPermissions(target);
-
-    if (storedPermissions.length > 0) {
-      this.editablePermissions.set(storedPermissions);
-      return;
-    }
-
-    const normalizedTarget = target.trim().toLowerCase();
-    const fallbackPermissions =
-      normalizedTarget === 'admin@erp.com'
-        ? this.permissionsService.getFullPermissions()
-        : normalizedTarget === 'user@erp.com'
-          ? this.permissionsService.getBasicPermissions()
-          : this.permissionsService.permissions();
-
-    this.editablePermissions.set([...fallbackPermissions]);
   }
 }

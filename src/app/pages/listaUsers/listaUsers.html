@@ -1,0 +1,154 @@
+<section class="lista-users" aria-label="Administracion de usuarios y permisos">
+  @if (!canAccessManagement()) {
+    <p-message severity="warn" text="No tienes permisos para administrar usuarios."></p-message>
+  } @else {
+    <div class="lista-users-layout">
+      <p-card header="Usuarios registrados">
+        <div class="toolbar">
+          @if (canCreateUsers()) {
+            <p-button
+              type="button"
+              label="Nuevo usuario"
+              icon="pi pi-plus"
+              (onClick)="onCreateNew()"
+            ></p-button>
+          }
+        </div>
+
+        <p-table [value]="users()" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '42rem' }">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Email</th>
+              <th>Usuario</th>
+              <th>Nombre</th>
+              <th>Estatus</th>
+              <th>Accion</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr [class.row-selected]="selectedUserKey() === user.key">
+              <td>{{ user.email }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.fullName }}</td>
+              <td>
+                <p-tag
+                  [value]="user.key === 'admin@erp.com' ? 'Admin protegido' : 'Editable'"
+                  [severity]="user.key === 'admin@erp.com' ? 'contrast' : 'info'"
+                ></p-tag>
+              </td>
+              <td>
+                <p-button
+                  type="button"
+                  size="small"
+                  icon="pi pi-pencil"
+                  label="Editar"
+                  (onClick)="onSelectUser(user)"
+                ></p-button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+
+      <p-card [header]="isEditing() ? 'Editar usuario' : 'Crear usuario'">
+        @if (feedback(); as status) {
+          <p-message [severity]="status.severity" [text]="status.text"></p-message>
+        }
+
+        <form [formGroup]="userForm" (ngSubmit)="onSaveUser()" novalidate>
+          <div class="users-grid">
+            <div class="field-item">
+              <label for="username">Usuario</label>
+              <input
+                id="username"
+                pInputText
+                type="text"
+                formControlName="username"
+                (input)="onTextInputWithoutSpaces('username', $event)"
+              />
+            </div>
+
+            <div class="field-item">
+              <label for="email">Email</label>
+              <input
+                id="email"
+                pInputText
+                type="email"
+                formControlName="email"
+                [readonly]="isEditing()"
+                (input)="onTextInputWithoutSpaces('email', $event)"
+              />
+            </div>
+
+            <div class="field-item">
+              <label for="fullName">Nombre completo</label>
+              <input id="fullName" pInputText type="text" formControlName="fullName" />
+            </div>
+
+            <div class="field-item">
+              <label for="address">Direccion</label>
+              <input id="address" pInputText type="text" formControlName="address" />
+            </div>
+
+            <div class="field-item">
+              <label for="phone">Telefono</label>
+              <input
+                id="phone"
+                pInputText
+                type="tel"
+                maxlength="10"
+                formControlName="phone"
+                (input)="onPhoneInput($event)"
+              />
+            </div>
+
+            <div class="field-item">
+              <label for="birthDate">Fecha de nacimiento</label>
+              <input id="birthDate" pInputText type="date" formControlName="birthDate" />
+            </div>
+
+            <div class="field-item field-item--full">
+              <label>Contrasena</label>
+              <p-password
+                formControlName="password"
+                [toggleMask]="true"
+                [fluid]="true"
+                [feedback]="false"
+              ></p-password>
+            </div>
+
+            <div class="field-item field-item--full">
+              <label for="permission-selector">Permisos</label>
+              <p-multiselect
+                inputId="permission-selector"
+                [options]="availablePermissions"
+                [ngModel]="editablePermissions()"
+                (ngModelChange)="onPermissionSelectionChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+                [showClear]="true"
+                [filter]="true"
+                placeholder="Selecciona permisos"
+              ></p-multiselect>
+            </div>
+          </div>
+
+          <div class="users-actions">
+            @if ((isEditing() && canEditUsers()) || (!isEditing() && canCreateUsers())) {
+              <p-button type="submit" icon="pi pi-save" [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"></p-button>
+            }
+
+            @if (isEditing() && canDeleteUsers()) {
+              <p-button
+                type="button"
+                severity="danger"
+                icon="pi pi-trash"
+                label="Eliminar usuario"
+                (onClick)="onDeleteUser()"
+              ></p-button>
+            }
+          </div>
+        </form>
+      </p-card>
+    </div>
+  }
+</section>

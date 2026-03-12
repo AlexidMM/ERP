@@ -127,11 +127,17 @@
 .kanban-mini-column h4 {
   margin: 0;
   font-size: 0.92rem;
+  color: #1e293b;
 }
 
 .kanban-mini-column ul {
   margin: 0.6rem 0 0;
   padding-left: 1rem;
+}
+
+.kanban-mini-column ul li {
+  color: #334155;
+  font-size: 0.85rem;
 }
 
 .kanban-empty {
@@ -156,7 +162,7 @@
 .status-card h4 {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--p-text-muted-color);
+  color: #475569;
 }
 
 .status-card p {
@@ -178,8 +184,9 @@
   border-radius: 0.65rem;
   background: var(--p-surface-100);
   padding: 0.75rem;
-  display: grid;
-  gap: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .chart-item header {
@@ -188,22 +195,25 @@
   align-items: center;
 }
 
-.chart-item h4,
+.chart-item h4 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #1e293b;
+}
+
 .chart-item p {
   margin: 0;
 }
 
-.bar-track {
-  width: 100%;
-  height: 10px;
-  border-radius: 999px;
-  background: #dbeafe;
-  overflow: hidden;
+:host ::ng-deep .chart-canvas canvas {
+  max-height: 220px !important;
 }
 
-.bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
+.chart-empty {
+  color: #64748b;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem 0;
 }
 
 .create-ticket-form {

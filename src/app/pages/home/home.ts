@@ -9,6 +9,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
+import { ChartModule } from 'primeng/chart';
 import { Router } from '@angular/router';
 import { ErpStoreService, TicketRecord } from '../../shared/erp-store.service';
 import { PermissionsService } from '../../services/permissions.service';
@@ -26,7 +27,8 @@ import { PermissionsService } from '../../services/permissions.service';
     DialogModule,
     InputTextModule,
     SelectModule,
-    TextareaModule
+    TextareaModule,
+    ChartModule
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -132,6 +134,83 @@ export class HomeComponent {
       { label: 'Tickets en progreso', total: inProgress, percent: toPercent(inProgress) }
     ];
   });
+
+  // --- Chart 1: Tickets completados (Doughnut) ---
+  readonly completedChartData = computed(() => {
+    const source = this.selectedGroupTickets();
+    const done = source.filter((t) => t.status === 'Hecho').length;
+    const revision = source.filter((t) => t.status === 'Revision').length;
+    const inProgress = source.filter((t) => t.status === 'En progreso').length;
+    const pending = source.filter((t) => t.status === 'Pendiente').length;
+    return {
+      labels: ['Hecho', 'Revision', 'En progreso', 'Pendiente'],
+      datasets: [{
+        data: [done, revision, inProgress, pending],
+        backgroundColor: ['#22c55e', '#a855f7', '#3b82f6', '#f59e0b'],
+        hoverBackgroundColor: ['#16a34a', '#9333ea', '#2563eb', '#d97706']
+      }]
+    };
+  });
+
+  readonly completedChartOptions = {
+    plugins: {
+      legend: { position: 'bottom' as const }
+    },
+    cutout: '65%'
+  };
+
+  // --- Chart 2: Trabajo hecho por persona (Bar) ---
+  readonly workByPersonChartData = computed(() => {
+    const source = this.selectedGroupTickets();
+    const doneTickets = source.filter((t) => t.status === 'Hecho');
+    const countMap = new Map<string, number>();
+    for (const ticket of doneTickets) {
+      const person = ticket.assignedTo?.trim() || 'Sin asignar';
+      countMap.set(person, (countMap.get(person) ?? 0) + 1);
+    }
+    const labels = [...countMap.keys()];
+    const data = labels.map((l) => countMap.get(l) ?? 0);
+    return {
+      labels,
+      datasets: [{
+        label: 'Tickets completados',
+        data,
+        backgroundColor: '#3b82f6',
+        borderRadius: 6
+      }]
+    };
+  });
+
+  readonly workByPersonChartOptions = {
+    indexAxis: 'y' as const,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { stepSize: 1 }, grid: { display: false } },
+      y: { grid: { display: false } }
+    }
+  };
+
+  // --- Chart 3: Distribución por prioridad (Pie) ---
+  readonly priorityChartData = computed(() => {
+    const source = this.selectedGroupTickets();
+    const alta = source.filter((t) => t.priority === 'Alta').length;
+    const media = source.filter((t) => t.priority === 'Media').length;
+    const baja = source.filter((t) => t.priority === 'Baja').length;
+    return {
+      labels: ['Alta', 'Media', 'Baja'],
+      datasets: [{
+        data: [alta, media, baja],
+        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
+        hoverBackgroundColor: ['#dc2626', '#d97706', '#16a34a']
+      }]
+    };
+  });
+
+  readonly priorityChartOptions = {
+    plugins: {
+      legend: { position: 'bottom' as const }
+    }
+  };
 
   readonly createTicketForm = new FormGroup({
     title: new FormControl('', {

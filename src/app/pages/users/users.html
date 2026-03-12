@@ -4,7 +4,7 @@
   } @else {
     <div class="users-layout">
       <p-card>
-        <h2 class="users-title">Perfil de Usuario</h2>
+        <h2 class="users-title">Mi perfil</h2>
 
         @if (feedback(); as status) {
           <p-message [severity]="status.severity" [text]="status.text"></p-message>
@@ -87,7 +87,7 @@
 
             <div class="users-actions">
               @if (canSaveUsers()) {
-                <p-button type="submit" [label]="profile() ? 'Guardar perfil' : 'Crear perfil'"></p-button>
+                <p-button type="submit" label="Guardar perfil"></p-button>
               }
               @if (canDeleteUsers()) {
                 <p-button type="button" severity="danger" label="Borrar perfil" (onClick)="onDeleteProfile()"></p-button>
@@ -95,7 +95,7 @@
             </div>
           </form>
         } @else {
-          <p-message severity="info" text="Modo solo lectura: puedes consultar usuarios, pero no crear o editar perfiles."></p-message>
+          <p-message severity="info" text="Modo solo lectura: puedes consultar tu informacion, pero no editarla."></p-message>
         }
       </p-card>
 
@@ -139,43 +139,6 @@
         }
       </p-card>
 
-      @if (canManagePermissionAssignments()) {
-        <p-card header="Gestion de Permisos por Usuario">
-          <div class="permissions-grid">
-            <div class="field-item">
-              <label for="permission-target">Usuario objetivo</label>
-              <p-select
-                inputId="permission-target"
-                [options]="knownUsers()"
-                [ngModel]="permissionTarget()"
-                (ngModelChange)="onPermissionTargetChange($event)"
-              ></p-select>
-            </div>
-
-            <div class="field-item field-item--full">
-              <label for="permission-selector">Permisos</label>
-              <p-multiselect
-                inputId="permission-selector"
-                [options]="availablePermissions"
-                [ngModel]="editablePermissions()"
-                (ngModelChange)="onPermissionSelectionChange($event)"
-                [showClear]="true"
-                [filter]="true"
-                placeholder="Selecciona permisos"
-              ></p-multiselect>
-            </div>
-          </div>
-
-          <div class="users-actions">
-            <p-button
-              type="button"
-              icon="pi pi-shield"
-              label="Guardar permisos"
-              (onClick)="savePermissions()"
-            ></p-button>
-          </div>
-        </p-card>
-      }
     </div>
   }
 </section>
