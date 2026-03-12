@@ -2,15 +2,12 @@
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { TextareaModule } from 'primeng/textarea';
-import { TooltipModule } from 'primeng/tooltip';
+import { TicketEditorModalComponent } from '../../components/ticket-editor-modal/ticket-editor-modal';
 import { ErpStoreService, TicketRecord } from '../../shared/erp-store.service';
 import { PermissionsService } from '../../services/permissions.service';
 
@@ -26,12 +23,9 @@ type TicketStatus = TicketRecord['status'];
     MessageModule,
     TagModule,
     TableModule,
-    DialogModule,
-    InputTextModule,
     SelectModule,
-    TextareaModule,
     SelectButtonModule,
-    TooltipModule
+    TicketEditorModalComponent
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',

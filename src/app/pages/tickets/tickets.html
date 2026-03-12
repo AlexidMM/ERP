@@ -174,52 +174,20 @@
   }
 </section>
 
-<p-dialog
-  [header]="quickDialogTitle()"
-  [modal]="true"
+<app-ticket-editor-modal
   [visible]="showQuickCreateDialog()"
-  [style]="{ width: 'min(720px, 95vw)' }"
+  [header]="quickDialogTitle()"
+  [form]="ticketsForm"
+  [priorities]="priorities"
+  [statuses]="statuses"
+  [submitLabel]="submitButtonLabel()"
+  [closeLabel]="'Cerrar'"
+  [dialogWidth]="'min(720px, 95vw)'"
+  [idPrefix]="'tickets-editor'"
   (visibleChange)="showQuickCreateDialog.set($event)"
->
-  <form [formGroup]="ticketsForm" (ngSubmit)="onSubmitQuickCreate()" novalidate class="tickets-form">
-    <div class="tickets-form-grid">
-      <div class="field-item">
-        <label for="title">Titulo</label>
-        <input id="title" pInputText type="text" formControlName="title" />
-      </div>
-
-      <div class="field-item">
-        <label for="assignedTo">Asignado a</label>
-        <input id="assignedTo" pInputText type="text" formControlName="assignedTo" placeholder="Opcional" />
-      </div>
-
-      <div class="field-item">
-        <label for="priority">Prioridad</label>
-        <p-select inputId="priority" [options]="priorities" formControlName="priority"></p-select>
-      </div>
-
-      <div class="field-item">
-        <label for="status">Estado</label>
-        <p-select inputId="status" [options]="statuses" formControlName="status"></p-select>
-      </div>
-
-      <div class="field-item">
-        <label for="dueDate">Fecha limite</label>
-        <input id="dueDate" pInputText type="date" formControlName="dueDate" />
-      </div>
-
-      <div class="field-item field-item--full">
-        <label for="description">Descripcion</label>
-        <textarea id="description" pTextarea rows="3" formControlName="description"></textarea>
-      </div>
-    </div>
-
-    <div class="tickets-actions">
-      <p-button type="submit" [label]="submitButtonLabel()"></p-button>
-      <p-button type="button" severity="secondary" label="Cerrar" (onClick)="closeQuickCreate()"></p-button>
-    </div>
-  </form>
-</p-dialog>
+  (submitForm)="onSubmitQuickCreate()"
+  (close)="closeQuickCreate()"
+></app-ticket-editor-modal>
 
 <p-dialog
   header="Detalle del Ticket"

@@ -1,0 +1,53 @@
+<p-dialog
+  [header]="header"
+  [modal]="true"
+  [visible]="visible"
+  [style]="{ width: dialogWidth }"
+  styleClass="ticket-editor-dialog"
+  (visibleChange)="onVisibleChange($event)"
+>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="ticket-editor-form">
+    <div class="ticket-editor-form-grid">
+      <div class="field-item">
+        <label [for]="idPrefix + '-title'">Titulo</label>
+        <input [id]="idPrefix + '-title'" pInputText type="text" formControlName="title" />
+      </div>
+
+      <div class="field-item">
+        <label [for]="idPrefix + '-assignedTo'">Asignado a</label>
+        <input
+          [id]="idPrefix + '-assignedTo'"
+          pInputText
+          type="text"
+          formControlName="assignedTo"
+          placeholder="Opcional"
+        />
+      </div>
+
+      <div class="field-item">
+        <label [for]="idPrefix + '-priority'">Prioridad</label>
+        <p-select [inputId]="idPrefix + '-priority'" [options]="priorities" formControlName="priority"></p-select>
+      </div>
+
+      <div class="field-item">
+        <label [for]="idPrefix + '-status'">Estado</label>
+        <p-select [inputId]="idPrefix + '-status'" [options]="statuses" formControlName="status"></p-select>
+      </div>
+
+      <div class="field-item">
+        <label [for]="idPrefix + '-dueDate'">Fecha limite</label>
+        <input [id]="idPrefix + '-dueDate'" pInputText type="date" formControlName="dueDate" />
+      </div>
+
+      <div class="field-item field-item--full">
+        <label [for]="idPrefix + '-description'">Descripcion</label>
+        <textarea [id]="idPrefix + '-description'" pTextarea rows="3" formControlName="description"></textarea>
+      </div>
+    </div>
+
+    <div class="ticket-editor-actions">
+      <p-button type="submit" [label]="submitLabel"></p-button>
+      <p-button type="button" severity="secondary" [label]="closeLabel" (onClick)="onClose()"></p-button>
+    </div>
+  </form>
+</p-dialog>

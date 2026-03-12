@@ -1,0 +1,55 @@
+.ticket-editor-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.ticket-editor-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.field-item {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.field-item--full {
+  grid-column: 1 / -1;
+}
+
+.ticket-editor-actions {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+:host ::ng-deep .ticket-editor-dialog .p-dialog-header {
+  background: #d1d5db;
+  color: #111827;
+  border-bottom: 1px solid #9ca3af;
+}
+
+:host ::ng-deep .ticket-editor-dialog .p-dialog-content {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+:host ::ng-deep .ticket-editor-dialog .field-item label {
+  color: #111827;
+  font-weight: 700;
+}
+
+:host ::ng-deep .ticket-editor-dialog .p-inputtext,
+:host ::ng-deep .ticket-editor-dialog .p-inputtextarea,
+:host ::ng-deep .ticket-editor-dialog .p-select {
+  background: #ffffff;
+  color: #111827;
+}
+
+@media (max-width: 640px) {
+  .ticket-editor-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -10,6 +10,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { TimelineModule } from 'primeng/timeline';
+import { TicketEditorModalComponent } from '../../components/ticket-editor-modal/ticket-editor-modal';
 import { IfHasPermissionDirective } from '../../directives/if-has-permission.directive';
 import { PermissionsService } from '../../services/permissions.service';
 import { ErpStoreService, TicketHistoryEntry, TicketRecord } from '../../shared/erp-store.service';
@@ -18,6 +19,7 @@ type TicketStatus = TicketRecord['status'];
 
 @Component({
   selector: 'app-tickets',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     FormsModule,
@@ -31,6 +33,7 @@ type TicketStatus = TicketRecord['status'];
     TextareaModule,
     ButtonModule,
     MessageModule,
+    TicketEditorModalComponent,
     IfHasPermissionDirective
   ],
   templateUrl: './tickets.html',

@@ -249,55 +249,17 @@
   </div>
 </section>
 
-<!-- Dialog de ticket: crear / editar -->
-<p-dialog
-  [header]="dialogTitle()"
-  [modal]="true"
+<app-ticket-editor-modal
   [visible]="showTicketDialog()"
-  [style]="{ width: 'min(700px, 95vw)' }"
+  [header]="dialogTitle()"
+  [form]="ticketForm"
+  [priorities]="priorities"
+  [statuses]="statuses"
+  [submitLabel]="submitLabel()"
+  [closeLabel]="'Cancelar'"
+  [dialogWidth]="'min(700px, 95vw)'"
+  [idPrefix]="'home-ticket'"
   (visibleChange)="showTicketDialog.set($event)"
->
-  <form [formGroup]="ticketForm" (ngSubmit)="submitTicket()" novalidate class="ticket-form">
-    <div class="ticket-form-grid">
-      <div class="field-item">
-        <label for="t-title">Titulo</label>
-        <input id="t-title" pInputText type="text" formControlName="title" />
-      </div>
-      <div class="field-item">
-        <label for="t-assigned">Asignado a</label>
-        <input
-          id="t-assigned"
-          pInputText
-          type="text"
-          formControlName="assignedTo"
-          placeholder="Opcional"
-        />
-      </div>
-      <div class="field-item">
-        <label for="t-priority">Prioridad</label>
-        <p-select inputId="t-priority" [options]="priorities" formControlName="priority"></p-select>
-      </div>
-      <div class="field-item">
-        <label for="t-status">Estado</label>
-        <p-select inputId="t-status" [options]="statuses" formControlName="status"></p-select>
-      </div>
-      <div class="field-item">
-        <label for="t-date">Fecha limite</label>
-        <input id="t-date" pInputText type="date" formControlName="dueDate" />
-      </div>
-      <div class="field-item field--full">
-        <label for="t-desc">Descripcion</label>
-        <textarea id="t-desc" pTextarea rows="3" formControlName="description"></textarea>
-      </div>
-    </div>
-    <div class="form-actions">
-      <p-button type="submit" [label]="submitLabel()"></p-button>
-      <p-button
-        type="button"
-        severity="secondary"
-        label="Cancelar"
-        (onClick)="closeTicketDialog()"
-      ></p-button>
-    </div>
-  </form>
-</p-dialog>
+  (submitForm)="submitTicket()"
+  (close)="closeTicketDialog()"
+></app-ticket-editor-modal>
