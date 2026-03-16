@@ -5,7 +5,7 @@ const BASIC_PERMISSIONS = Object.freeze([
   'ticket:view',
   'ticket:edit_state',
   'user:view',
-  'user:edit'
+  'user:edit',
 ]);
 
 const FULL_PERMISSIONS = Object.freeze([

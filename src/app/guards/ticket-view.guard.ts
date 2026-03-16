@@ -4,5 +4,5 @@ import { PermissionsService } from '../services/permissions.service';
 
 export const ticketViewGuard: CanActivateFn = () => {
   const permissionsService = inject(PermissionsService);
-  return permissionsService.hasPermission('ticket:view');
+  return permissionsService.hasAnyPermission(['ticket:add', 'ticket:edit']);
 };

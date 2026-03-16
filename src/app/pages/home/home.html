@@ -81,18 +81,26 @@
 
         <!-- Filtros -->
         <div class="filter-bar">
-          <p-select
-            [options]="statusFilterOptions"
-            [ngModel]="selectedStatusFilter()"
-            (ngModelChange)="onStatusFilterChange($event)"
-            placeholder="Estado"
-          ></p-select>
-          <p-select
-            [options]="priorityFilterOptions"
-            [ngModel]="selectedPriorityFilter()"
-            (ngModelChange)="onPriorityFilterChange($event)"
-            placeholder="Prioridad"
-          ></p-select>
+          <div class="filter-field">
+            <label class="filter-label" for="home-status-filter">Estado:</label>
+            <p-select
+              inputId="home-status-filter"
+              [options]="statusFilterOptions"
+              [ngModel]="selectedStatusFilter()"
+              (ngModelChange)="onStatusFilterChange($event)"
+              placeholder="Estado"
+            ></p-select>
+          </div>
+          <div class="filter-field">
+            <label class="filter-label" for="home-priority-filter">Prioridad:</label>
+            <p-select
+              inputId="home-priority-filter"
+              [options]="priorityFilterOptions"
+              [ngModel]="selectedPriorityFilter()"
+              (ngModelChange)="onPriorityFilterChange($event)"
+              placeholder="Prioridad"
+            ></p-select>
+          </div>
           <p-button
             severity="secondary"
             variant="outlined"

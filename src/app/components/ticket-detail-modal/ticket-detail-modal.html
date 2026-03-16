@@ -1,0 +1,75 @@
+<p-dialog
+  [header]="header"
+  [modal]="true"
+  [visible]="visible"
+  [style]="{ width: dialogWidth }"
+  styleClass="ticket-detail-dialog"
+  (visibleChange)="onVisibleChange($event)"
+>
+  @if (ticket; as currentTicket) {
+    <section class="ticket-detail">
+      <div class="ticket-detail-grid">
+        <article>
+          <h4>{{ currentTicket.title }}</h4>
+          <p>{{ currentTicket.description }}</p>
+          <p><strong>Estado:</strong> {{ currentTicket.status }}</p>
+          <p><strong>Prioridad:</strong> {{ currentTicket.priority }}</p>
+          <p><strong>Asignado:</strong> {{ currentTicket.assignedTo }}</p>
+          <p><strong>Creacion:</strong> {{ formatDate(currentTicket.createdAt) }}</p>
+          <p><strong>Fecha limite:</strong> {{ formatDate(currentTicket.dueDate) }}</p>
+        </article>
+
+        <article>
+          <h4>Comentarios / Actividad</h4>
+          <form [formGroup]="commentForm" (ngSubmit)="onAddComment()" class="comment-form">
+            <textarea
+              pTextarea
+              rows="3"
+              formControlName="message"
+              placeholder="Agregar comentario"
+              [disabled]="!canComment"
+            ></textarea>
+            <div class="comment-actions">
+              <p-button
+                type="submit"
+                label="Agregar comentario"
+                icon="pi pi-comment"
+                [disabled]="!canComment"
+              ></p-button>
+            </div>
+          </form>
+
+          @if (!canComment) {
+            <p-message
+              severity="warn"
+              text="Solo el creador o el asignado del ticket pueden comentar."
+            ></p-message>
+          }
+
+          @if (currentTicket.comments.length === 0) {
+            <p-message severity="info" text="Aun no hay comentarios."></p-message>
+          } @else {
+            <ul class="comments-list">
+              @for (comment of currentTicket.comments; track comment.id) {
+                <li>
+                  <strong>{{ comment.author }}</strong>
+                  <p>{{ comment.message }}</p>
+                  <small>{{ formatDate(comment.createdAt) }}</small>
+                </li>
+              }
+            </ul>
+          }
+        </article>
+      </div>
+
+      <article class="ticket-history">
+        <h4>Historial de cambios</h4>
+        <p-timeline [value]="currentTicket.history" layout="vertical">
+          <ng-template pTemplate="content" let-entry>
+            {{ historyLabel(entry) }}
+          </ng-template>
+        </p-timeline>
+      </article>
+    </section>
+  }
+</p-dialog>

@@ -54,7 +54,7 @@ export class SidebarComponent {
       });
     }
 
-    if (this.permissionsService.hasPermission('ticket:view')) {
+    if (this.permissionsService.hasAnyPermission(['ticket:add', 'ticket:edit'])) {
       items.push({
         label: 'Tickets',
         icon: 'pi pi-ticket',
@@ -80,7 +80,8 @@ export class SidebarComponent {
       'group:add',
       'group:edit',
       'group:delete',
-      'ticket:view'
+      'ticket:add',
+      'ticket:edit'
     ]);
   });
 

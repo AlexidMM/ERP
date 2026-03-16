@@ -189,77 +189,13 @@
   (close)="closeQuickCreate()"
 ></app-ticket-editor-modal>
 
-<p-dialog
-  header="Detalle del Ticket"
-  [modal]="true"
+<app-ticket-detail-modal
   [visible]="showDetailDialog()"
-  [style]="{ width: 'min(780px, 96vw)' }"
+  [ticket]="selectedTicket()"
+  [commentForm]="commentForm"
+  [canComment]="canCommentCurrentTicket()"
+  [header]="'Detalle del Ticket'"
+  [dialogWidth]="'min(780px, 96vw)'"
   (visibleChange)="showDetailDialog.set($event)"
->
-  @if (selectedTicket(); as ticket) {
-    <section class="ticket-detail">
-      <div class="ticket-detail-grid">
-        <article>
-          <h4>{{ ticket.title }}</h4>
-          <p>{{ ticket.description }}</p>
-          <p><strong>Estado:</strong> {{ ticket.status }}</p>
-          <p><strong>Prioridad:</strong> {{ ticket.priority }}</p>
-          <p><strong>Asignado:</strong> {{ ticket.assignedTo }}</p>
-          <p><strong>Creacion:</strong> {{ formatDate(ticket.createdAt) }}</p>
-          <p><strong>Fecha limite:</strong> {{ formatDate(ticket.dueDate) }}</p>
-        </article>
-
-        <article>
-          <h4>Comentarios / Actividad</h4>
-          <form [formGroup]="commentForm" (ngSubmit)="addComment()" class="comment-form">
-            <textarea
-              pTextarea
-              rows="3"
-              formControlName="message"
-              placeholder="Agregar comentario"
-              [disabled]="!canCommentCurrentTicket()"
-            ></textarea>
-            <div class="comment-actions">
-              <p-button
-                type="submit"
-                label="Agregar comentario"
-                icon="pi pi-comment"
-                [disabled]="!canCommentCurrentTicket()"
-              ></p-button>
-            </div>
-          </form>
-
-          @if (!canCommentCurrentTicket()) {
-            <p-message
-              severity="warn"
-              text="Solo el creador o el asignado del ticket pueden comentar."
-            ></p-message>
-          }
-
-          @if (ticket.comments.length === 0) {
-            <p-message severity="info" text="Aun no hay comentarios."></p-message>
-          } @else {
-            <ul class="comments-list">
-              @for (comment of ticket.comments; track comment.id) {
-                <li>
-                  <strong>{{ comment.author }}</strong>
-                  <p>{{ comment.message }}</p>
-                  <small>{{ formatDate(comment.createdAt) }}</small>
-                </li>
-              }
-            </ul>
-          }
-        </article>
-      </div>
-
-      <article class="ticket-history">
-        <h4>Historial de cambios</h4>
-        <p-timeline [value]="ticket.history" layout="vertical">
-          <ng-template pTemplate="content" let-entry>
-            {{ historyLabel(entry) }}
-          </ng-template>
-        </p-timeline>
-      </article>
-    </section>
-  }
-</p-dialog>
+  (addComment)="addComment()"
+></app-ticket-detail-modal>

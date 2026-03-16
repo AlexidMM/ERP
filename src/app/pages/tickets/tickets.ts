@@ -9,11 +9,11 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
-import { TimelineModule } from 'primeng/timeline';
+import { TicketDetailModalComponent } from '../../components/ticket-detail-modal/ticket-detail-modal';
 import { TicketEditorModalComponent } from '../../components/ticket-editor-modal/ticket-editor-modal';
 import { IfHasPermissionDirective } from '../../directives/if-has-permission.directive';
 import { PermissionsService } from '../../services/permissions.service';
-import { ErpStoreService, TicketHistoryEntry, TicketRecord } from '../../shared/erp-store.service';
+import { ErpStoreService, TicketRecord } from '../../shared/erp-store.service';
 
 type TicketStatus = TicketRecord['status'];
 
@@ -27,13 +27,13 @@ type TicketStatus = TicketRecord['status'];
     DialogModule,
     TagModule,
     TableModule,
-    TimelineModule,
     InputTextModule,
     SelectModule,
     TextareaModule,
     ButtonModule,
     MessageModule,
     TicketEditorModalComponent,
+    TicketDetailModalComponent,
     IfHasPermissionDirective
   ],
   templateUrl: './tickets.html',
@@ -566,10 +566,6 @@ export class TicketsComponent {
       month: 'short',
       day: 'numeric'
     });
-  }
-
-  historyLabel(entry: TicketHistoryEntry): string {
-    return `${entry.action} - ${this.formatDate(entry.createdAt)}`;
   }
 
   prioritySeverity(priority: TicketRecord['priority']): 'danger' | 'warn' | 'success' {

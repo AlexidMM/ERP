@@ -1,0 +1,46 @@
+.ticket-detail {
+  display: grid;
+  gap: 1rem;
+}
+
+.ticket-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.comment-form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comments-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.comments-list p {
+  margin: 0.25rem 0;
+}
+
+.ticket-history h4 {
+  margin: 0 0 0.75rem;
+}
+
+:host ::ng-deep .ticket-detail-dialog .p-dialog-content {
+  background: #f8fafc;
+  color: #111827;
+}
+
+@media (max-width: 768px) {
+  .ticket-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
