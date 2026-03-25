@@ -12,6 +12,7 @@ import { ErpStoreService, TicketRecord } from '../../shared/erp-store.service';
 import { PermissionsService } from '../../services/permissions.service';
 
 type TicketStatus = TicketRecord['status'];
+type TicketOwnershipFilter = 'Todos' | 'Mis tickets';
 
 @Component({
   selector: 'app-home',
@@ -44,6 +45,7 @@ export class HomeComponent {
   readonly viewMode = signal<'kanban' | 'lista'>('kanban');
   readonly selectedStatusFilter = signal<'Todos' | TicketStatus>('Todos');
   readonly selectedPriorityFilter = signal<'Todas' | TicketRecord['priority']>('Todas');
+  readonly selectedOwnershipFilter = signal<TicketOwnershipFilter>('Todos');
 
   private readonly statusesCatalog = ['Pendiente', 'En progreso', 'Revision', 'Hecho'] as const;
   private readonly prioritiesCatalog = ['Alta', 'Media', 'Baja'] as const;
@@ -52,6 +54,7 @@ export class HomeComponent {
   readonly priorities = [...this.prioritiesCatalog];
   readonly statusFilterOptions: Array<'Todos' | TicketStatus> = ['Todos', ...this.statuses];
   readonly priorityFilterOptions: Array<'Todas' | TicketRecord['priority']> = ['Todas', ...this.priorities];
+  readonly ownershipFilterOptions: TicketOwnershipFilter[] = ['Todos', 'Mis tickets'];
 
   readonly viewOptions = [
     { label: 'Kanban', value: 'kanban', icon: 'pi pi-table' },
@@ -89,10 +92,16 @@ export class HomeComponent {
   readonly filteredGroupTickets = computed(() => {
     const sf = this.selectedStatusFilter();
     const pf = this.selectedPriorityFilter();
+    const of = this.selectedOwnershipFilter();
+    const currentUser = this.currentUserKey().trim().toLowerCase();
+
     return this.selectedGroupTickets().filter((t) => {
       const ms = sf === 'Todos' || t.status === sf;
       const mp = pf === 'Todas' || t.priority === pf;
-      return ms && mp;
+      const mo =
+        of === 'Todos' ||
+        (currentUser.length > 0 && t.assignedTo.trim().toLowerCase().includes(currentUser));
+      return ms && mp && mo;
     });
   });
 
@@ -194,9 +203,14 @@ export class HomeComponent {
     this.selectedPriorityFilter.set(v);
   }
 
+  onOwnershipFilterChange(v: TicketOwnershipFilter): void {
+    this.selectedOwnershipFilter.set(v);
+  }
+
   clearFilters(): void {
     this.selectedStatusFilter.set('Todos');
     this.selectedPriorityFilter.set('Todas');
+    this.selectedOwnershipFilter.set('Todos');
   }
 
   openCreateTicket(): void {

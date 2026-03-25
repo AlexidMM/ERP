@@ -54,14 +54,6 @@ export class SidebarComponent {
       });
     }
 
-    if (this.permissionsService.hasAnyPermission(['ticket:add', 'ticket:edit'])) {
-      items.push({
-        label: 'Tickets',
-        icon: 'pi pi-ticket',
-        routerLink: '/home/tickets'
-      });
-    }
-
     return [
       {
         label: 'Navegacion',

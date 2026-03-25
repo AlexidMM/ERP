@@ -101,6 +101,16 @@
               placeholder="Prioridad"
             ></p-select>
           </div>
+          <div class="filter-field">
+            <label class="filter-label" for="home-ownership-filter">Asignacion:</label>
+            <p-select
+              inputId="home-ownership-filter"
+              [options]="ownershipFilterOptions"
+              [ngModel]="selectedOwnershipFilter()"
+              (ngModelChange)="onOwnershipFilterChange($event)"
+              placeholder="Asignacion"
+            ></p-select>
+          </div>
           <p-button
             severity="secondary"
             variant="outlined"
