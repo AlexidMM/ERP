@@ -1,7 +1,22 @@
 <aside class="sidebar" aria-label="Menú principal">
   <header class="sidebar-header">
-    <i class="pi pi-briefcase" aria-hidden="true"></i>
-    <span>ERP</span>
+    <div class="brand-block">
+      <i class="pi pi-briefcase" aria-hidden="true"></i>
+      <span>ERP</span>
+    </div>
+
+    <button
+      pButton
+      type="button"
+      [icon]="collapseButtonIcon()"
+      [rounded]="true"
+      [text]="true"
+      severity="secondary"
+      class="toggle-button"
+      [attr.aria-label]="collapseButtonLabel()"
+      [attr.title]="collapseButtonLabel()"
+      (click)="onToggleSidebar()"
+    ></button>
   </header>
 
   <p-panelmenu [model]="menuItems()"></p-panelmenu>
@@ -17,7 +32,8 @@
     label="Cerrar sesion"
     class="action-button"
     severity="secondary"
-    (onClick)="onLogout()"
+    [attr.aria-label]="'Cerrar sesion'"
+    (click)="onLogout()"
   ></button>
 
   <footer class="sidebar-footer">

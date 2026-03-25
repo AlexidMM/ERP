@@ -8,15 +8,35 @@
   border: 1px solid var(--p-content-border-color);
   border-radius: 1rem;
   background: var(--p-surface-0);
+  transition: padding 220ms ease;
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--p-text-color);
+}
+
+.brand-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.toggle-button {
+  border: 1px solid var(--p-content-border-color);
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+
+.toggle-button:hover,
+.toggle-button:focus-visible {
+  border-color: var(--p-primary-color);
+  color: var(--p-primary-color) !important;
 }
 
 :host ::ng-deep .p-panelmenu {

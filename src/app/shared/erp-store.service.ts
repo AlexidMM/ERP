@@ -679,12 +679,16 @@ export class ErpStoreService {
   private normalizePriority(priority: string | undefined): TicketRecord['priority'] {
     const normalized = String(priority ?? '').trim().toLowerCase();
 
-    if (normalized === 'alta' || normalized === '高' || normalized === '紧急' || normalized === '较高') {
+    if (normalized === 'alta' || normalized === 'urgente') {
       return 'Alta';
     }
 
-    if (normalized === 'baja' || normalized === '低' || normalized === '较低' || normalized === '阻塞') {
+    if (normalized === 'baja') {
       return 'Baja';
+    }
+
+    if (normalized === 'media') {
+      return 'Media';
     }
 
     return 'Media';

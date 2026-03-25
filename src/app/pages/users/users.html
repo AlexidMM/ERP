@@ -72,15 +72,15 @@
               </div>
 
               <div class="field-item">
-                <label>Contrasena</label>
+                <label>Contraseña</label>
                 <p-password formControlName="password" [toggleMask]="true" [fluid]="true" [feedback]="false"></p-password>
               </div>
 
               <div class="field-item">
-                <label>Confirmar contrasena</label>
+                <label>Confirmar contraseña</label>
                 <p-password formControlName="confirmPassword" [toggleMask]="true" [fluid]="true" [feedback]="false"></p-password>
                 @if (usersForm.touched && usersForm.hasError('passwordMismatch')) {
-                  <p-message severity="error" text="Las contrasenas no coinciden"></p-message>
+                  <p-message severity="error" text="Las contraseñas no coinciden"></p-message>
                 }
               </div>
             </div>

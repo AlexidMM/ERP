@@ -1,7 +1,30 @@
-<section class="main-layout" aria-label="Layout principal">
-  <app-sidebar></app-sidebar>
+<section
+  class="main-layout"
+  [class.main-layout-collapsed]="isSidebarCollapsed()"
+  aria-label="Layout principal"
+>
+  @if (!isSidebarCollapsed()) {
+    <app-sidebar (toggleSidebar)="toggleSidebar()"></app-sidebar>
+  }
 
   <main class="main-content" aria-label="Contenido principal">
-    <router-outlet></router-outlet>
+    @if (isSidebarCollapsed()) {
+      <button
+        pButton
+        type="button"
+        icon="pi pi-bars"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        class="sidebar-reopen-button"
+        aria-label="Mostrar sidebar"
+        title="Mostrar sidebar"
+        (click)="toggleSidebar()"
+      ></button>
+    }
+
+    <div class="main-content-shell">
+      <router-outlet></router-outlet>
+    </div>
   </main>
 </section>

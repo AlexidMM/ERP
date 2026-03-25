@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
@@ -19,7 +19,13 @@ export class SidebarComponent {
   private readonly permissionsService = inject(PermissionsService);
   private readonly erpStore = inject(ErpStoreService);
 
+  readonly toggleSidebar = output<void>();
+
   readonly projectVersion = 'ERP version 4';
+
+  readonly collapseButtonIcon = computed(() => 'pi pi-angle-left');
+
+  readonly collapseButtonLabel = computed(() => 'Ocultar sidebar');
 
   readonly menuItems = computed<MenuItem[]>(() => {
     this.permissionsService.permissions();
@@ -82,5 +88,9 @@ export class SidebarComponent {
     this.erpStore.clearSessionUser();
     this.erpStore.clearSelectedGroup();
     void this.router.navigateByUrl('/auth/login');
+  }
+
+  onToggleSidebar(): void {
+    this.toggleSidebar.emit();
   }
 }
